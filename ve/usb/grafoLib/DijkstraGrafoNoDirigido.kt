@@ -28,12 +28,12 @@ import java.util.LinkedList
 public class DijkstraGrafoNoDirigido(val g: GrafoNoDirigido, val s: Int) {
     private val n = g.obtenerNumeroDeVertices()
     private val dist = DoubleArray(n) { POSITIVE_INFINITY }
-    private val pred = Array<Arco?>(n) { null }
+    private val pred = Array<Arista?>(n) { null }
 
     init {
         g.chequearVertice(s)
 
-        if (g.arcos().any { it.peso < 0 }) {
+        if (g.aristas().any { it.peso < 0 }) {
             throw RuntimeException("El grafo de entrada contiene un lado con peso no negativo.")
         }
 
@@ -58,11 +58,11 @@ public class DijkstraGrafoNoDirigido(val g: GrafoNoDirigido, val s: Int) {
      *
      * Tiempo de ejecución: O(1).
      * Precondición: [Q] es una instancia de ColaDePrioridad.
-     *               [p] es un arco (u, v) perteneciente al conjunto de
+     *               [p] es un Arista (u, v) perteneciente al conjunto de
      *               lados de g.
      * Postcondición: dist[p.sumidero()] <= dist[p.sumidero()]0.            
      */
-    private fun relajacionColaDePrioridad(Q: ColaDePrioridad, p: Arco) {
+    private fun relajacionColaDePrioridad(Q: ColaDePrioridad, p: Arista) {
         val u = p.fuente()
         val v = p.sumidero()
 
@@ -121,12 +121,12 @@ public class DijkstraGrafoNoDirigido(val g: GrafoNoDirigido, val s: Int) {
      * Tiempo de ejecución: O(E) en el peor caso.
      * Precondición: [v] pertenece al conjunto de vértices del dígrafo.
      * Postcondición: [obtenerCaminoDeCostoMinimo] es un objeto iterable cuyos
-     *                elementos son los arcos que conforman el camino de costo
+     *                elementos son los aristas que conforman el camino de costo
      *                mínimo desde [s] hasta [v] en orden.
      */
-    fun obtenerCaminoDeCostoMinimo(v: Int):  Iterable<Arco> {
-        // Se usa una pila para guardar la secuencia de arcos a retornar
-        val S = LinkedList<Arco>()
+    fun obtenerCaminoDeCostoMinimo(v: Int):  Iterable<Arista> {
+        // Se usa una pila para guardar la secuencia de aristas a retornar
+        val S = LinkedList<Arista>()
         var u = pred[v]
 
         if (existeUnCamino(v)) {
