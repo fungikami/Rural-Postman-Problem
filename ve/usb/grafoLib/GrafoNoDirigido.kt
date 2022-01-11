@@ -157,11 +157,9 @@ public class GrafoNoDirigido: Grafo {
         // Se concatenan todas las listas de adyacencia en una sola
         listaDeAdy.forEach { c.addAll(it) }
 
-        // Se eliminan los grafos repetidos
-        return c.distinct()
+        // Se eliminan las aristas repetidas
+        return c.distinct() // Ojo CUidado
     }
-
-
 
     /** 
      * Retorna la representación en String del grafo no dirigido, como
@@ -202,10 +200,6 @@ public class GrafoNoDirigido: Grafo {
         val v2 = a.elOtroVertice(v1)
         chequearVertice(v1)
         chequearVertice(v2)
-
-        if (a in listaDeAdy[v1] || a in listaDeAdy[v2]) {
-            throw RuntimeException("La arista ya está en el grafo.")
-        }
     }
 
     /** 

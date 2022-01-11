@@ -9,4 +9,7 @@
 
 public class ApareamientoVertexScan(g: GrafoNoDirigido) {
      
+    init {
+        
+    }
 }

@@ -22,16 +22,16 @@
 
 % Para agregar encabezado y pie de página
 \usepackage{fancyhdr} 
-\usepackage{clrscode3e}
+\usepackage{clrscode3e} % Para agregar pseudocódigo
 
 \usepackage{listings}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\footnotesize USB}                  % Encabezado izquierda
-\fancyhead[R]{\footnotesize Estructuras de datos en MIPS}  
-\fancyfoot[R]{\footnotesize Informe}              % Pie derecha
-\fancyfoot[C]{\thepage}                           % centro
-\fancyfoot[L]{\footnotesize Ingeniería de la Computación}  %izquierda
+\fancyhead[L]{\footnotesize USB}                           % Encabezado izquierda
+\fancyhead[R]{\footnotesize Algoritmo Heurístico RPP}      % Encabezado derecha
+\fancyfoot[R]{\footnotesize Informe}                       % Pie derecha
+\fancyfoot[C]{\thepage}                                    % Centro
+\fancyfoot[L]{\footnotesize Ingeniería de la Computación}  % Izquierda
 \renewcommand{\footrulewidth}{0.4pt}
 
 \newcommand{\coment}[1]{}
@@ -55,13 +55,13 @@
 
    \begin{minipage}{0.9\textwidth} 
       \begin{center}                                                             
-         \textsc{\LARGE Informe de Proyecto I }
+         \textsc{\LARGE Informe de Proyecto II }
       \end{center}
    \end{minipage} \\ [3cm]
 
    \vspace*{1cm}                                                                              
    \HRule \\ [0.4cm]                                                  
-   {\huge \bfseries Estructuras de Datos en MIPS} \\ [0.4cm] 
+   {\huge \bfseries Un algoritmo heurístico para resolver el Problema del Cartero Rural} \\ [0.4cm] 
    \HRule \\ [4cm]
 
    \begin{minipage}{\textwidth} 
@@ -92,380 +92,72 @@
 \newpage
                                                     
 % -------------------------------------------
+\section{Introducción}
 
-\section{Pseudocódigo}
+El siguiente estudio experimental consiste en ejecutar un algoritmo heurístico para
+obtener soluciones aproximadas al Problema del Cartero Rural, modelado mediante el uso de
+grafos no dirigidos. Para ello, se implentará el algoritmo presentado por Pearn y Wu, el
+cual es una modificación del algoritmo de Christofides et al. \\
 
-Se presentan a continuación los pseudocódigos del programa que
-se desea implementar. \\
+Se compararán dos algoritmos para la obtención de apareamientos perfectos. \\
 
-Primeramente, se necesita extraer los datos necesarios de cada
-archivo de entrada, para ello, se usan tablas de hash y listas.
+Los siguientes son los detalles de la máquina y el entorno donde se ejecutaron los algoritmos:
 
-\begin{codebox}
-   \Procname{$\proc{Extraer-Datos}$}
-   \li \id{archivoEst} = Leer archivo de estudiantes
-   \li \id{tablaHashEst} = \kw{new} \proc{TablaHash}(101)
+\begin{itemize}
+   \item \textbf{Sistema operativo}: GNU/Linux (Linux Mint 20 Ulyana).
+   \item \textbf{Procesador}: Intel(R) Core(TM) i7-8750H.
+   \item \textbf{Memoria RAM}: 8GB.
+   \item \textbf{Compilador}: Kotlin version 1.5.31 (JRE 11.0.9.1+1-Ubuntu-0ubuntu1.20.04).
+   \item \textbf{Entorno de ejecución}: OpenJDK Runtime Environment (11.0.9.1).
+   % \item \textbf{Flags (máquina virtual)}: -Xmx2g.
+\end{itemize}
 
-   \li \For linea in archivoEst:
-   \li \Do
-      \id{carnet} = Guardar carnet
-      \li \id{nombre} = Guardar nombre
-      \li \id{indice} = Guardar índice
-      \li \id{creditosAprob} = Guardar número de créditos aprobados
-      \li \id{est} = \kw{new} \proc{Estudiante}(\id{carnet}, \id{nombre}, \id{indice}, \id{creditosAprob})
-      \li \id{tablaHashEst}.\proc{Insertar}(\id{carnet}, \id{est})
-      \End
+\section{Diseño de la solución}
 
-   \li
-   \li \id{archivoMat} = Leer archivo de materias
-   \li \id{tablaHashMat} = \kw{new} \proc{TablaHash}(101)
-   \li \id{listaMat} = \kw{new} \proc{Lista}()
-   \li \For linea in archivoMat:
-   \li \Do
-      \id{codigo} = Guardar codigo
-      \li \id{nombre} = Guardar nombre
-      \li \id{creditos} = Guardar creditos
-      \li \id{numCupos} = Guardar número de cupos
-      \li \id{minCreditos} = Guardar mínimo de créditos
-      \li \id{mat} = \kw{new} \proc{Materia}(\id{codigo}, \id{nombre}, \id{creditos}, \id{numCupos}, \id{minCreditos})
-      \li \id{tablaHashMat}.\proc{Insertar}(\id{carnet}, \id{est})
-      \li \id{listaMat}.\proc{Insertar-Ordenado}(\id{codigo}, \id{f})
-      \End
-
-   \li
-   \li \id{listaSol} = \kw{new} \proc{Lista}()
-   \li \id{archivoSol} = Leer archivo de solicitudes
-   \li \For linea in archivoSol:
-   \li \Do
-      \id{carnet} = Guardar carnet del estudiante
-      \li \id{est} = \id{tablaHashEst}.\proc{Obtener-Valor}(\id{carnet})
-      \li \id{codigo} = Guardar codigo de la materia
-      \li \id{mat} = \id{tablaHashMat}.\proc{Obtener-Valor}(\id{codigo})
-      \li \id{sol} = \kw{new} \proc{Solicitud}(\id{est}, \id{mat}, `S')
-      \li \id{listaSol}.\proc{Insertar}(\id{sol}) \label{li:Extraer-Datos-final}
-      \End
-   \End
-   \end{codebox}
-
-   Al terminar este pseudocódigo, se debe tener una lista de solicitudes,
-   una lista de códigos de materias en orden lexicográfico, una tabla de
-   estudiantes, y una tabla de materias, la idea ahora es procesar la lista
-   de solicitudes para que cada materia tenga una lista de estudiantes inscritos.
-
-   \begin{codebox}
-      \setlinenumberplus{li:Extraer-Datos-final}{1}
-      \Procname{$\proc{Procesar-Solicitudes}$}
-      \li \For sol in listaSol:
-      \Do
-         \li \id{est} = \attrib{sol}{estudiante}
-         \li \id{mat} = \attrib{sol}{materia}
-         \li \id{mat}.\proc{Agregar-Estudiante}(\id{est}) \label{li:Procesar-Solicitudes-final}
-         \End
-      \End
-   \end{codebox}
-
-   Ahora, cada materia contiene una lista con los estudiantes inscritos. Se
-   asume que la estructura se encarga de mantener actualizado el número de
-   cupos y de agregar en orden a los estudiantes en su lista de estudiantes.
-   Así, para finalizar esta primera etapa solamente resta escribir en el
-   archivo de salida cada materia con sus estudiantes inscritos; nótese que para
-   estas inclusiones no se toma en cuenta el número de créditos aprobados del estudiante
-   ni el mínimo de créditos requeridos por la materia, ya que la modalidad
-   indica que en la primera etapa se aceptar \textbf{todas} las solicitudes.
-
-   \begin{codebox}
-      \setlinenumberplus{li:Procesar-Solicitudes-final}{1}
-      \Procname{$\proc{Generar-Archivo-Tentativo}$}
-      \li \id{archivoTen} = Abrir archivo tentativo a escribir
-      \li \For mat in listaMat:
-      \Do
-         \li \id{archivoTen}.\proc{Escribir}(`$<$\attrib{mat}{codigo}$>$ ')
-         \li \id{archivoTen}.\proc{Escribir}(```$<$\attrib{mat}{nombre}$>$'' ')
-         \li \id{archivoTen}.\proc{Escribir}(`$<$\attrib{mat}{numCupos}$>\backslash$n')
-         
-         \li \For est in \attrib{mat}{estudiantes}:
-         \Do
-            \li \id{archivoTen}.\proc{Escribir}(`   $<$\attrib{est}{carnet}$>$ ')
-            \li \id{archivoTen}.\proc{Escribir}(`$<$\attrib{est}{nombre}$>\backslash$n') \label{li:Generar-Archivo-Tentativo-final}
-            \End
-         \End
-         \End
-      \End
-   \end{codebox}
-
-   Luego, se procesan las solicitudes de corrección. Al terminar el siguiente pseudocódigo, 
-   se debe tener una lista de solicitudes de corrección. Para procesar dicha lista, se comienza
-   aceptando todas las eliminaciones y paralelamente creando una lista de solicitudes de inclusión
-   que estará ordenada de acuerdo a la prioridad dada en la modalidad M1.5: se le da más prioridad a los 
-   estudiantes con menor número de créditos aprobados. \\
-
-   Una vez aceptadas todas las eliminaciones, se procede a liberar cupos de las materias (líneas
-   64-70),
-   para ello, primero se eliminan de cada materia a los estudiantes que no cuenten con los
-   requisitos necesarios para cursarlas (número mínimo de créditos aprobados, en este caso),
-   y luego se elimina de las materias que exceden el número de cupos a los estudiantes con 
-   menor prioridad. Por último, se aceptan
-   inclusiones siguiendo la lista de prioridad siempre y cuando no se exceda el número de cupos.
-
-   \begin{codebox}
-      \setlinenumberplus{li:Generar-Archivo-Tentativo-final}{1}
-      \Procname{$\proc{Extraer-Datos-Correccion}$}
-      \li \id{listaSolCor} = \kw{new} \proc{Lista}()
-      \li \id{archivoCor} = Leer archivo de solicitudes de corrección
-      \li \For linea in archivoCor:
-      \li \Do
-         \id{carnet} = Guardar carnet del estudiante
-         \li \id{est} = \id{tablaHashEst}.\proc{Obtener-Valor}(\id{carnet})
-         \li \id{codigo} = Guardar codigo de la materia
-         \li \id{mat} = \id{tablaHashMat}.\proc{Obtener-Valor}(\id{codigo})
-         \li \id{op} = Guardar operación de la solicitud
-         \li \id{sol} = \kw{new} \proc{Solicitud}(\id{est}, \id{mat}, \id{op})
-         \li \id{listaCor}.\proc{Insertar}(\id{sol}) \label{li:Extraer-Datos-Correccion-final}
-         \End
-      \End
-   \end{codebox}
-
-   \begin{codebox}
-      \setlinenumberplus{li:Extraer-Datos-Correccion-final}{1}
-      \Procname{$\proc{Procesar-Solicitudes-Correccion}$}
-      \li \id{listaPrioridad} = \kw{new} \proc{Lista}()
-      \li \For sol in listaCor:
-      \Do
-         \li \id{est} = \attrib{sol}{estudiante}
-         \li \id{mat} = \attrib{sol}{materia}
-
-         \li \If \attrib{sol}{op} == `E':
-         \Do 
-            \li \id{mat}.\proc{Eliminar-Estudiante}(\id{est}) \label{li:Procesar-Solicitudes-Correccion-corte}
-         \end{codebox}
-
-         \begin{codebox}
-         \setlinenumberplus{li:Procesar-Solicitudes-Correccion-corte}{1}
-         \li\Do \Do \Else:
-            \li \id{listaPrioridad}.\proc{Insertar-Ordenado}(\id{sol}, \id{g})
-         \li
-         \End
-         \End
-      
-      \li \For \id{mat} in listaMat:
-      \Do
-         \li \For \id{est} in \attrib{mat}{estudiantes}:
-         \Do
-            \li \If \attrib{est}{creditosAprob} $<$ \attrib{mat}{minCreditos}:
-            \Do \li \id{mat}.\proc{Eliminar-Estudiante}(\id{est})
-         \End
-            \End
-      \End
-
-      \li \For \id{mat} in listaMat:
-         \li \Do \While \attrib{mat}{numCupos} $<$ 0:
-            \li \Do // Eliminar al estudiante con más créditos aprobados. 
-         \End
-         \li
-      \End
-      \li \For \id{sol} in \id{listaPrioridad}:
-      \Do 
-         \li \id{mat} = \attrib{sol}{materia}
-         \li \id{est} = \attrib{sol}{estudiante}
-         \li \If \attrib{mat}{cupos} $>$ 0:
-         \Do
-         \li \If \attrib{est}{creditosAprob} $\geq$ \attrib{mat}{minCreditos}:
-         \Do 
-         \li \id{mat}.\proc{Agregar-Estudiante}(\id{est})
-         \label{li:Procesar-Solicitudes-Correccion-final}
-         \End
-      \End
-   \end{codebox}
-
-   Finalmente, se escribe en el archivo de salida cada materia con sus 
-   estudiantes inscritos y eliminados. Si el estudiante fue inscrito en
-   el proceso de inscripción, no se denota la operación. En cambio, si 
-   estaba inscrito y fue eliminado, se denota la operación de eliminación,
-   o si se inscribió en corrección, se denota la operación de inscripción.
-   No estarán en en archivo definitivo los estudiantes cuya inclusión se
-   haya negado en la corrección, bien sea por falta de créditos o porque
-   no habían cupos disponibles.
-
-   \begin{codebox}
-      \setlinenumberplus{li:Procesar-Solicitudes-Correccion-final}{1}
-      \Procname{$\proc{Generar-Archivo-Definitivo}$}
-      \li \id{archivoDef} = Abrir archivo definitivo a escribir
-      \li \For mat in listaMat:
-      \Do
-         \li \id{archivoDef}.\proc{Escribir}(`$<$\attrib{mat}{codigo}$>$ ')
-         \li \id{archivoDef}.\proc{Escribir}(```$<$\attrib{mat}{nombre}$>$'' ')
-         \li \id{archivoDef}.\proc{Escribir}(`$<$\attrib{mat}{numCupos}$>\backslash$n')
-         
-         \li \For est in \attrib{mat}{estudiantes}:
-         \Do
-            \li \id{archivoTen}.\proc{Escribir}(`$<$\attrib{est}{carnet}$>$ ')
-            \li \id{archivoTen}.\proc{Escribir}(`$<$\attrib{est}{nombre}$>$ ') 
-            \li \id{archivoTen}.\proc{Escribir}(`$<$\attrib{est}{op}$>\backslash$n') \label{li:Generar-Archivo-Definitivo-final}
-            \End
-         \End
-         \End
-      \End
-   \end{codebox}
-
-   \section{Estructuras utilizadas}
-
-   En la seccion anterior se menciona el uso de distintas estructuras de datos
-   utilizadas en el diseño del programa. En esta sección se enlistan cada una
-   de ellas, junto con sus atributos y operaciones. En algunos casos, se implementaron
-   más operaciones de las aquí mencionadas, que se dejaron en el código fuente.
-
-   \begin{itemize}
-      \item \proc{Par}:
-      \begin{itemize}
-         \item Atributos:
-
-         \begin{itemize}
-            \item Primer elemento.
-            \item Segundo elemento.
-         \end{itemize}
-      \end{itemize}
-      
-      \pagebreak
-      \begin{itemize}
-         \item Operaciones:
-
-         \begin{itemize}
-            \item \proc{Crear}(\id{primero}, \id{segundo})
-         \end{itemize}
-      \end{itemize}
-
-      \item \proc{Lista}:
-
-      \begin{itemize}
-         \item Atributos:
-
-         \begin{itemize}
-            \item Cabeza.
-            \item Tamaño.
-         \end{itemize}
-      \end{itemize}
-
-      \begin{itemize}
-         \item Operaciones:
-
-         \begin{itemize}
-            \item \proc{Crear}()
-            \item \proc{Insertar}(\id{elemento})
-            \item \proc{Insertar-Ordenado}(\id{elemento}, \id{f})
-         \end{itemize}
-      \end{itemize}
-
-      \item \proc{TablaHash}:
-      
-      \begin{itemize}
-         \item Atributos:
-
-         \begin{itemize}
-            \item Tamaño.
-            \item Tabla.
-         \end{itemize}
-      \end{itemize}
-
-      \begin{itemize}
-         \item Operaciones:
-         
-         \begin{itemize}
-            \item \proc{Crear}(\id{tam})
-            \item \proc{Insertar}(\id{clave}, \id{valor})
-            \item \proc{Obtener-Valor}(\id{clave})
-         \end{itemize}
-      \end{itemize}
-
-      \item \proc{Estudiante}:
-      \begin{itemize}
-         \item Atributos:
-
-         \begin{itemize}
-            \item Carnet.
-            \item Nombre.
-            \item Índice.
-            \item Créditos aprobados.
-         \end{itemize}
-      \end{itemize}
-
-      \begin{itemize}
-         \item Operaciones:
-         
-         \begin{itemize}
-            \item \proc{Crear}(\id{carnet}, \id{nombre}, \id{indice}, \id{creditosAprob})
-         \end{itemize}
-      \end{itemize}
-
-      \item \proc{Materia}:
-      \begin{itemize}
-         \item Atributos:
-
-         \begin{itemize}
-            \item Código.
-            \item Nombre.
-            \item Número de créditos.
-            \item Cupos.
-            \item Número mínimo de créditos aprobados.
-            \item Lista Estudiantes.
-         \end{itemize}
-      \end{itemize}
-      
-      \begin{itemize}
-         \item Operaciones:
-         
-         \begin{itemize}
-            \item \proc{Crear}(\id{codigo}, \id{nombre}, \id{creditos}, \id{numCupos}, \id{minCreditos})
-            \item \proc{Aumentar-Cupo}()
-            \item \proc{Disminuir-Cupo}()
-            \item \proc{Agregar-Estudiante}(\id{Estudiante})
-            \item \proc{Eliminar-Estudiante}(\id{Estudiante})
-         \end{itemize}
-      \end{itemize}
+hola. \\
 
 
-      \item \proc{Solicitud}:
-      \begin{itemize}
-         \item Atributos:
+\section{Detalles de la implementacion}
 
-         \begin{itemize}
-            \item Estudiante.
-            \item Materia.
-            \item Operación.
-         \end{itemize}
-      \end{itemize}
+chau. \\
 
-      \begin{itemize}
-         \item Operaciones:
-         
-         \begin{itemize}
-            \item \proc{Crear}(\id{est}, \id{mat}, \id{op})
-         \end{itemize}
-      \end{itemize}
-      
-   \end{itemize}
 
-\section{Consideraciones}
-Durante la implementación de las estructuras de datos, se decidió crear una tabla de hash para
-almacenar las materias y los estudiantes, ya que se realizaba numerosas búsquedas durante el programa. 
-Ejemplo de ello se presenta al procesar cada solicitud de inscripción en $\proc{Extraer-Datos}$
-y $\proc{Extraer-Datos-Correccion}$, en la cual se tiene que buscar por cada solicitud, los datos
-del estudiante y la lista de estudiantes de cada \proc{Materia} para insertar la inscripción o eliminación. 
-Así, para evitar búsquedas lineales con estructuras como listas, con las tablas de hash implementadas se logra 
-obtener la información de cada materia/estudiante en tiempo amortizado constante. En este sentido, la función 
-de Hash escogida para \proc{TablaHash} fue basada en la función de Hash para Strings que utiliza el lenguaje 
-de programación Java\footnote{https://cseweb.ucsd.edu/~kube/cls/100/Lectures/lec16/lec16-15.html}, la
-cual es sencilla de calcular a la vez que da buenos resultados en la práctica. \\
+\section{Datos de la plataforma}
 
-Por otro lado, se implementaron distintas funciones de comparación (a las que refiere el pseudocódigo en
-la sección 1 como $f$ y $g$ en las líneas 22 y 62). Para imprimir cada materia con sus
-respectivos estudiantes inscritos y eliminados, se toma en cuenta el orden ascendente según el código
-de la materia y el carnet del estudiante. Para ello, se realizan comparaciones por cada valor ASCII de 
-un caracter del carnet al insertar el estudiante en la lista de estudiantes de la materia. 
-En cambio, para tomar en cuenta la modalidad asignada en las solicitudes de corrección, se realiza una 
-comparación entre el número de créditos aprobados de cada estudiante a inscribir. \\
+hola. \\
 
-Para la implementación y almacenamiento en MIPS de algunos atributos de las estructuras de datos
-(como \proc{Estudiante} y \proc{Materia}), se realizaron funciones \proc{itoa} y \proc{atoi}, las cuales
-convierten un entero a una cadena de caracteres y viceversa, lo cual facilita las comparaciones
-numéricas cuando es necesario, y la impresión del archivo de texto al final de cada etapa. \\
+\section{Resultados experimentales}
+
+hola otra vez, aquí van dos tablas. \\
+
+La primera tabla debe tener los valores obtenidos en la solución de las instancias de
+RPP. En especifico la tabla debe mostrar:
+
+1. El nombre de la instancia,
+
+2. El valor óptimo de la instancia,
+
+3. El porcentaje de desviación de la solución obtenida usando la heurística ávida del
+Algoritmo 2.
+4. El porcentaje de desviación de la solución obtenida usando la heurística Vertex-Scan
+del Algoritmo 3
+
+Para el caso de la heurística Vertex-Scan, para cada instancia debe presentar el promedio
+de las soluciones de tres corridas.
+La segunda tabla debe mostrar el tiempo promedio que tomó la ejecución de todas las
+instancias, usando heurística ávida y la heurística Vertex-Scan.
+\section{Análisis de los resultados}
+
+
+\section{Conclusiones}
+
+\begin{itemize}
+   \item 
+   \item 
+\end{itemize}
+
+\section{Referencias (en caso de tenerlas)}
+
+ñema. \\
+
 \end{document}

@@ -8,5 +8,8 @@
  * Clase que representa implementacion de una lista enlazada
  */
 public class ApareamientoPerfectoAvido(g: GrafoNoDirigido) {
-     
+    
+    init {
+        
+    }
 }
