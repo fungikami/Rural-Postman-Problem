@@ -14,20 +14,45 @@ public class HeuristicaRPP {
         val gP = GrafoNoDirigido(n)
         R.forEach { gP.agregarArista(it) }
 
-        // Verifica si G' es conexo
+        // Verifica si G' es conexo y par
         val cc = ComponentesConexasDFSIter(gP)
-        
-        if (cc.numeroDeComponentesConexas() == 1) {
-            // Verificar si G' es par
-            
-            if () {
+        val esConexo = cc.numeroDeComponentesConexas() == 1
+        val esPar = esPar(gP)
+
+        if (!esConexo) {
+            if (!esPar) {
+
+            } else {
 
             }
-           
+        }
+    }
+
+    private fun esPar(g: GrafoNoDirigido): Boolean {
+        var esPar = true
+
+        val paridad = BooleanArray(n) { true }
+
+        gP.aristas().forEach {
+            val u = it.cualquieraDeLosVertices()
+            val v = it.elOtroVertice(u)
+            
+            if (paridad[u]) {
+                paridad[u] = false
+                esPar = false
+            } else {
+                paridad[u] = true
+            }
+
+            if (paridad[v]) {
+                paridad[v] = false
+                esPar = false
+            } else {
+                paridad[v] = true
+            }
         }
 
-        // 
-
+        return esPar
     }
 
     fun main(args: Array<String>) {
