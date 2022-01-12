@@ -37,7 +37,7 @@ public class DijkstraGrafoNoDirigido(val g: GrafoNoDirigido, val s: Int) {
             throw RuntimeException("El grafo de entrada contiene un lado con peso no negativo.")
         }
 
-        /* Se prescinde de S ya qye solo es de importancia práctica
+        /* Se prescinde de S ya que solo es de importancia práctica
         y con fines de hilar la demostración */
         dist[s] = 0.0
 
@@ -60,11 +60,11 @@ public class DijkstraGrafoNoDirigido(val g: GrafoNoDirigido, val s: Int) {
      * Precondición: [Q] es una instancia de ColaDePrioridad.
      *               [p] es un Arista (u, v) perteneciente al conjunto de
      *               lados de g.
-     * Postcondición: dist[p.sumidero()] <= dist[p.sumidero()]0.            
+     * Postcondición: dist[p.v] <= dist[p.v]0.            
      */
     private fun relajacionColaDePrioridad(Q: ColaDePrioridad, p: Arista) {
-        val u = p.fuente()
-        val v = p.sumidero()
+        val u = p.cualquieraDeLosVertices()
+        val v = p.elOtroVertice(u)
 
         if (dist[v] > dist[u] + p.peso()) {
             Q.disminuirClave(Pair(v, dist[v]), dist[u] + p.peso)
@@ -132,7 +132,7 @@ public class DijkstraGrafoNoDirigido(val g: GrafoNoDirigido, val s: Int) {
         if (existeUnCamino(v)) {
             while (u != null) {
                 S.addFirst(u)
-                u = pred[u.fuente()]
+                u = pred[u.cualquieraDeLosVertices()]
             }
         }
 
