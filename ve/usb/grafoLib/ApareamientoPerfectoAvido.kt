@@ -9,7 +9,7 @@ import java.util.LinkedList
  * Clase que representa implementacion de una lista enlazada
  */
 public class ApareamientoPerfectoAvido(g: GrafoNoDirigido) {
-    val n = g.numeroDeVertices()
+    val n = g.obtenerNumeroDeVertices()
     val M = mutableSetOf<Arista>()
 
     // POR TESTEAR
@@ -20,18 +20,16 @@ public class ApareamientoPerfectoAvido(g: GrafoNoDirigido) {
         
         val vP = BooleanArray(n) { true }
 
-        // Construir lista con lados ordenados 
+        // Construye una lista con lados ordenados 
         val L = LinkedList<Arista>()
         g.aristas().forEach { L.add(it) }
         L.sort()
-
-        println("L: $L")
 
         var paresDeVertices = n / 2
         while (paresDeVertices != 0) {
             val lado = L.poll()
             val i = lado.cualquieraDeLosVertices()
-            val j = lado.elOtroVertice(u)
+            val j = lado.elOtroVertice(i)
 
             if (vP[i] && vP[j]) {
                 M.add(lado)

@@ -10,7 +10,7 @@ import java.util.LinkedList
  */
 
 public class ApareamientoVertexScan(g: GrafoNoDirigido) {
-    val n = g.numeroDeVertices()
+    val n = g.obtenerNumeroDeVertices()
     val M = mutableSetOf<Arista>()
 
     // POR TESTEAR
@@ -19,24 +19,27 @@ public class ApareamientoVertexScan(g: GrafoNoDirigido) {
         if (n % 2 == 1) throw RuntimeException("El grafo no tiene un número par de vértices")
         if (!esCompleto(g)) throw RuntimeException("El grafo no es completo")
         
+        // Crea V'
         val vP = mutableSetOf<Int>()
         for (i in 0 until n) vP.add(i)
 
-        val eP = g.aristas().sortBy()
+        // Crea E'
+        val eP = g.aristas()
 
         while (!vP.isEmpty()) {
-            // Escoger aleatoriamente un vértice i de vP
+            // Escoge aleatoriamente un vértice i de vP
             val i = vP.random()
 
-            // Escoger el lado (i, j) con con menor costo
+            // Escoge el lado (i, j) con con menor costo
             val lado = Arista(0, 1) // TODO
+            val j = 0
             
             M.add(lado)
             
             vP.remove(i)
             vP.remove(j)
 
-            // Eliminar todos los lados que tengan como adyacentes i o j
+            // Elimina todos los lados que tengan como adyacentes i o j
             g.adyacentes(i).forEach { eP.remove(it) }
             g.adyacentes(j).forEach { eP.remove(it) }
         }
