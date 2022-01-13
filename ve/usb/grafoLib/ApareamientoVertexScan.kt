@@ -23,25 +23,43 @@ public class ApareamientoVertexScan(g: GrafoNoDirigido) {
         val vP = mutableSetOf<Int>()
         for (i in 0 until n) vP.add(i)
 
-        // Crea E'
-        val eP = g.aristas()
+        // Crea E', se añaden los lados (u, v) y (v, u)
+        val eP = g.aristas().toMutableList()
+        val m = eP.size
 
+        for (i in 0 until m) { 
+            val u = eP[i].cualquieraDeLosVertices()
+            val v = eP[i].elOtroVertice(u)
+            eP.add(Arista(v, u, eP[i].peso()))
+        }
+
+        // Se ordenan los lados
+        eP.sortWith(compareBy({ it.cualquieraDeLosVertices() }, { it }))
+
+        val indV = IntArray(n)
+        var k = -1
+        
+        // indV[i] = { índ. de la 1ra aparición de (i, j) en eP para algún j }
+        eP.forEachIndexed { i, it ->
+            val u = it.cualquieraDeLosVertices()
+            if (u > k) {
+                k = u
+                indV[k] = i
+            }
+        }
+        
         while (!vP.isEmpty()) {
             // Escoge aleatoriamente un vértice i de vP
             val i = vP.random()
 
             // Escoge el lado (i, j) con con menor costo
-            val lado = Arista(0, 1) // TODO
-            val j = 0
-            
+            val lado = eP[indV[i]]
+            val j = lado.elOtroVertice(i)            
             M.add(lado)
             
+            // Elimina los vértices i, j de vP
             vP.remove(i)
             vP.remove(j)
-
-            // Elimina todos los lados que tengan como adyacentes i o j
-            g.adyacentes(i).forEach { eP.remove(it) }
-            g.adyacentes(j).forEach { eP.remove(it) }
         }
     }
     
