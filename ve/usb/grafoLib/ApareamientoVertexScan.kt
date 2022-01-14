@@ -19,6 +19,8 @@ import java.util.LinkedList
 public class ApareamientoVertexScan(g: GrafoNoDirigido) {
     val n = g.obtenerNumeroDeVertices()
     val M = mutableSetOf<Arista>()
+    val nLados = g.obtenerNumeroDeLados()
+    val completo = nLados == n * (n - 1) / 2
 
     init {
         // Verificar que sea completo y número par de vértices
@@ -87,5 +89,5 @@ public class ApareamientoVertexScan(g: GrafoNoDirigido) {
      * Postcondición: [esCompleto] es -True si [g] es completo.
      *                                -False de otra forma. 
      */
-    private fun esCompleto(g: GrafoNoDirigido): Boolean = g == g
+    private fun esCompleto(g: GrafoNoDirigido): Boolean = completo
 }
