@@ -39,29 +39,45 @@ public class HeuristicaRPP {
                 // (El peso de cada arista es el del camino de costo minimo de (vi, vj))
                 // 
 
-                //
+                // Obtiene el árbol mínimo cobertor
 
-                //
+
+                // Elimina los lados duplicados de E_t0
+
+
+                // Agrega G' vértices en E_t que no se encuentren VR
+
+
+                // Agrega a G' los lados E_t, se permite lados duplicados
+
+
             }
 
             if (!esConexo || !esPar(gP)) {
                 // Líneas 16 a 23
 
                 // Determina conjunto de vértices V_0 de grado impar 
-
+                // val v0 = MutableSet<Int>() 
+                // for (v in 0 until n) {
+                //     if (gP.grado(v) % 2 == 1) v0.add(v)
+                // }
 
                 // Construye grafo G_0 con V_0
+                // val G0 = GrafoNoDirigido(v0.size)
 
 
-                // Determina apareamiento perfecto
+                // Determina apareamiento perfecto M
+                // val M = if (usarVertexScan) ApareamientoVertexScan(G0) else ApareamientoPerfectoAvido(G0)
 
-
-                // Determina CCM y agrega lados a G'
-
+                // M.forEach {
+                //     Obtener el CCMvi,vj asociado a (vi, vj);
+                //     ParaCada lado (i, j) ∈ CCMvi,vj hacer
+                //         si i /∈ G0 entonces se agrega el vértice i a G0
+                //         si j /∈ G0 entonces se agrega el vértice j a G0
+                //         Se agrega el lado (i, j) a G0 sin importar que se encuentre duplicado
+                // }
 
             }
-
-            gP.agregarArista(Arista(0, 1, 2.0))
 
             return CicloEulerianoGrafoNoDirigido(gP).obtenerCicloEuleriano()
         }
@@ -81,6 +97,10 @@ public class HeuristicaRPP {
             return paridad.all { it }
         }
 
+        private fun desv(valorObt: Int, valorOpt: Int): Int {
+            return (valorObt - valorOpt) * 100 / valorOpt
+        }
+
         @JvmStatic fun main(args: Array<String>) {
             // Verificar argumentos
             if (args.size != 2 || (args[0] != "a" && args[0] != "v")) {
@@ -88,14 +108,14 @@ public class HeuristicaRPP {
                 exitProcess(1)
             }
 
+            val vertexScan = args[0] == "v"
+            val nombreArchivo = args[1]
+
             // Verifica si el archivo existe
             if (!File(nombreArchivo).exists()) {
                 println("El archivo indicado en $nombreArchivo no existe o no se puede leer.")
                 exitProcess(1)
             }
-
-            val vertexScan = args[0] == "v"
-            val nombreArchivo = args[1]
 
             val sc = Scanner(FileInputStream(nombreArchivo))
             sc.nextLine()   // Saltar Nombre
