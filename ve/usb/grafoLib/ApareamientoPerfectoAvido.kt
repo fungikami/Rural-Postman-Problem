@@ -3,6 +3,8 @@
  * Fecha: 16/Ene/2022.
  */
 
+package ve.usb.grafoLib
+
 import java.util.LinkedList
 
 /*
@@ -42,5 +44,5 @@ public class ApareamientoPerfectoAvido(g: GrafoNoDirigido) {
     
     fun obtenerApareamiento(): MutableSet<Arista> = M
 
-    private fun esCompleto(g: GrafoNoDirigido): Boolean = true
+    private fun esCompleto(g: GrafoNoDirigido): Boolean = g == g
 }

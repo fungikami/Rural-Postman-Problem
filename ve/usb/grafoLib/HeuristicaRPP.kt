@@ -3,6 +3,8 @@
  * Fecha: 16/Ene/2022.
  */
 
+package ve.usb.grafoLib
+
 import kotlin.system.measureTimeMillis
 
 /**
