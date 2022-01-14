@@ -10,7 +10,7 @@ fun main(args: Array<String>) {
     val filename = "$CARPETA/${args[0]}"
 
 
-    // testAPA(filename)
+    testAPA(filename)
     // testAPAVS(filename)
     // testCicloEuleriano()
 }

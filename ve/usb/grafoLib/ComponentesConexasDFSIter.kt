@@ -20,21 +20,17 @@ import java.util.LinkedList
 public class ComponentesConexasDFSIter(val g: GrafoNoDirigido) {
     // Propiedades de los vértices del grafo
     private val n = g.obtenerNumeroDeVertices()
-    private val color = Array<Color>(n) { Color.BLANCO }
-    private val cc = IntArray(n)
-    private var numCC = 0
-
-    /* Lleva una lista con el número de elementos de cada
-    componente conexa para obtenerlo luego en tiempo constante. */
-    private val numElems = ArrayList<Int>()
+    private val color = Array<Color>(n) {Color.BLANCO}
+    private val ccIndex = IntArray(n)
+    private var contCC = 0
+    private var numVert = ArrayList<Int>()
 
     init {
-	    // Algoritmo DFS
         for (v in 0 until n) {
-            if (color[v] == Color.BLANCO){
-                numElems.add(0)
+            if (color[v] == Color.BLANCO) {
+                numVert.add(0)
                 dfsVisit(g, v)
-                numCC++
+                contCC++
             }
         }
     }
@@ -53,25 +49,25 @@ public class ComponentesConexasDFSIter(val g: GrafoNoDirigido) {
      *               [u] es un vértice perteneciente al grafo.
      * Postcondición: true
      */
-    private fun dfsVisit(g: Grafo, u: Int) {
-        // Se empieza a explorar u
-        color[u] = Color.GRIS
-        cc[u] = numCC
-        numElems[numCC]++
+    private fun dfsVisit(g: Grafo, t: Int) {
+        color[t] = Color.GRIS
+        ccIndex[t] = contCC
+        numVert[contCC]++
 
-        val S = LinkedList<Int>()
-        S.addFirst(u)
+        val Q = LinkedList<Int>()
+        Q.addFirst(t)
 
-        while (!S.isEmpty()) {
-            val s = S.poll()
+        while (Q.size != 0) {
+            val u = Q.poll()
 
-            g.adyacentes(s).forEach {
-                // Se selecciona el adyacente
-                val v = it.elOtroVertice(s)
-
+            val ady = g.adyacentes(u)
+            ady.forEach {
+                val v = it.elOtroVertice(u)
                 if (color[v] == Color.BLANCO) {
+                    ccIndex[v] = contCC
+                    numVert[contCC]++
                     color[v] = Color.NEGRO
-                    S.addFirst(v)
+                    Q.addFirst(v)
                 }
             }
         }
@@ -90,11 +86,10 @@ public class ComponentesConexasDFSIter(val g: GrafoNoDirigido) {
      *                                           la misma componente conexa.
      *                                          -False de otra forma.
      */   
-    fun estanMismaComponente(v: Int, u: Int): Boolean {
-        g.chequearVertice(u)
-        g.chequearVertice(v)
-
-        return cc[u] == cc[v]
+    fun estanMismaComponente(v: Int, u: Int) : Boolean {
+        if (v < 0 || v >= n) throw RuntimeException("El vértice $v no pertenece al grafo.")
+        if (u < 0 || u >= n) throw RuntimeException("El vértice $u no pertenece al grafo.")
+        return ccIndex[v] == ccIndex[u]
     }
 
     /**
@@ -105,7 +100,7 @@ public class ComponentesConexasDFSIter(val g: GrafoNoDirigido) {
      * Postcondición: [numeroDeComponentesConexas] es un entero
      *                con el número de componentes conexas de g.
      */  
-    fun numeroDeComponentesConexas(): Int = numCC
+    fun numeroDeComponentesConexas() : Int = contCC
 
     /**
      * Retorna el identificador de la componente conexa donde
@@ -118,10 +113,9 @@ public class ComponentesConexasDFSIter(val g: GrafoNoDirigido) {
      * Postcondición: [obtenerComponente] Es un entero no negativo en
      *                [0..numeroDeCC) con el identificador de [v].
      */
-    fun obtenerComponente(v: Int): Int {
-        g.chequearVertice(v)
-
-        return cc[v]
+    fun obtenerComponente(v: Int) : Int {
+        if (v < 0 || v >= n) throw RuntimeException("El vértice $v no pertenece al grafo.")
+        return ccIndex[v]
     }
 
     /**
@@ -137,11 +131,10 @@ public class ComponentesConexasDFSIter(val g: GrafoNoDirigido) {
      *                es [compID]
      */
     fun numVerticesDeLaComponente(compID: Int) : Int {
-        if (0 > compID || compID >= numeroDeComponentesConexas()) {
+        if (compID < 0 || compID >= contCC) {
             throw RuntimeException("El identificador $compID no pertenece a ninguna componente conexa.")
         }
-
-        return numElems[compID]
+        return numVert[compID]
     }
 
 }

@@ -7,18 +7,21 @@ package ve.usb.grafoLib
 
 import kotlin.system.measureTimeMillis
 import kotlin.system.exitProcess
+import kotlin.Double.Companion.POSITIVE_INFINITY
 import java.io.File
 import java.io.FileInputStream
 import java.util.Scanner
 import java.lang.StringBuilder
 
 /**
- * Implementación de un algoritmo ávido para resolver el
- * Problema del Cartero Rural (RPP) basado en algoritmo propuesto
- * por .
+ * Implementación del algoritmo heurístico para resolver el
+ * Problema del Cartero Rural (RPP) basado en el algoritmo
+ * propuesto por Christofides et al.
  */
 public class HeuristicaRPP {
     companion object {
+        
+        // --------- ALGORITMO ---------
         
         private val mapa = HashMap<Int, Int>()
         private var mapaInverso = IntArray(0)
@@ -31,15 +34,39 @@ public class HeuristicaRPP {
             // Crea grafo G_R = <V_R, R> (V_R son los vértices de R)
             val n = g.obtenerNumeroDeVertices()
             val gP = GrafoNoDirigido(n)
-            R.forEach { gP.agregarArista(it) }
+            R.forEach {
+                val u = it.cualquieraDeLosVertices()
+                val v = it.elOtroVertice(u)
+
+                // Agrega las aristas mapeadas
+                gP.agregarArista(Arista(f(u), f(v), it.peso())) 
+            }
 
             // Verifica si G' es conexo y par
             val cc = ComponentesConexasDFSIter(gP)
             val esConexo = cc.numeroDeComponentesConexas() == 1
+            
+            // Obtiene la matriz de costos de caminos de costo mínimo
+            val cm = calcularMatrizCostoMinimo(g)
+            println("Matriz de costos:")
+            cm.forEach { println(it.joinToString(", ")) }
 
+            /*
+                0  3   6  3   7  9  5         
+                3  0   4  2   6  6  2
+                6  4   0  6  10  7  3
+                3  2   6  0   4  8  4 
+                7  6  10  4   0  5  8
+                9  6   7  8   5  0  4
+                5  2   3  4   8  4  0
+            */
+            
             // Si G' no es conexo (sin importar si es o no par)
             if (!esConexo) {
                 // Líneas 9 a 15
+                // Conjunto de componentes conexas de G'
+                // val compConexas = 
+
                 // Construye grafo G_t de componentes conexas de G'
                 // (El peso de cada arista es el del camino de costo minimo de (vi, vj))
                 // 
@@ -54,7 +81,6 @@ public class HeuristicaRPP {
 
 
                 // Agrega a G' los lados E_t, se permite lados duplicados
-
 
             }
 
@@ -84,12 +110,15 @@ public class HeuristicaRPP {
 
             }
 
+            // ***************************************************************
+            // OJOOOO, DEVOLVER QUE LOS VERTICES COMIENCEN DESDE 1 Y NO DESDE 0
+            // ***************************************************************
             return CicloEulerianoGrafoNoDirigido(gP).obtenerCicloEuleriano()
         }
 
-        private fun f(v: Int) = mapa[v]
+        private fun f(v: Int): Int = mapa[v]!!
 
-        private fun fInversa(v: Int) = mapaInverso[v]
+        private fun fInversa(v: Int): Int = mapaInverso[v]
 
         private fun esPar(g: GrafoNoDirigido): Boolean {
             val n = g.obtenerNumeroDeVertices()
@@ -106,6 +135,23 @@ public class HeuristicaRPP {
             return paridad.all { it }
         }
 
+        private fun calcularMatrizCostoMinimo(g: GrafoNoDirigido): Array<DoubleArray> {
+            val n = g.obtenerNumeroDeVertices()
+            val W = Array<DoubleArray>(n) { DoubleArray(n) }
+            
+            for (i in 0 until n) {
+                val dij = DijkstraGrafoNoDirigido(g, i)
+
+                for (j in i + 1 until n) {
+                    W[i][j] = dij.costoHasta(j)
+                    W[j][i] = dij.costoHasta(j)
+                }
+            }
+
+            return W
+        }
+
+        // -------- EJECUCIÓN DEL CLIENTE -------- 
         private fun desv(valorObt: Int, valorOpt: Int): Int {
             return (valorObt - valorOpt) * 100 / valorOpt
         }
@@ -152,6 +198,7 @@ public class HeuristicaRPP {
                     .map(MatchResult::value)
                     .toList()
                 
+                // Los vértices comienzan desde 0
                 val (u, v, peso) = Triple(
                     aux[0].toInt() - 1,
                     aux[1].toInt() - 1, 
@@ -205,14 +252,16 @@ public class HeuristicaRPP {
                 exitProcess(1)
             }
 
+            // Extrae el grafo G y el conjunto R del archivo          
             val vertexScan = args[0] == "v"
             val (g, R) = extraerDatos(args[1])
 
             println("Vertices del grafo: ${g.obtenerNumeroDeVertices()}")
 
             val mapaCorrecto = (
-                (0 until mapaInverso.size).all { f(fInversa(it)) == it } &&
-                (mapaInverso.size == mapa.size)
+                (mapaInverso.size == mapa.size) &&
+                (0 until mapa.size).all { f(fInversa(it)) == it }  &&
+                mapaInverso.all { fInversa(f(it)) == it }
             )
             println("Mapa construido correctamente: $mapaCorrecto")
 

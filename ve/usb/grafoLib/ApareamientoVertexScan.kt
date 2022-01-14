@@ -11,6 +11,9 @@ import java.util.LinkedList
  * Implementación del algoritmo Vertex Scan para obtener un apareamiento
  * perfecto. 
  *
+ * Se determina un apareamiento perfecto del grafo con la creación de una
+ * instancia de la clase.
+ *
  * @throws [RuntimeException] Si el grafo [g] no es completo o
  *                            no tiene un número para de vértices.
  * 
@@ -19,8 +22,6 @@ import java.util.LinkedList
 public class ApareamientoVertexScan(g: GrafoNoDirigido) {
     val n = g.obtenerNumeroDeVertices()
     val M = mutableSetOf<Arista>()
-    val nLados = g.obtenerNumeroDeLados()
-    val completo = nLados == n * (n - 1) / 2
 
     init {
         // Verificar que sea completo y número par de vértices
@@ -72,22 +73,37 @@ public class ApareamientoVertexScan(g: GrafoNoDirigido) {
     }
      
     /** 
-     * Retorna el conjunto de lados del apareamiento ávido.
+     * Retorna el conjunto de lados del apareamiento perfecto.
      * 
      * Tiempo de ejecución: O(1).
      * Precondición: true.
      * Postcondición: [obtenerApareamiento] conjunto de lados 
-     *                del apareamiento ávido.
+     *                del apareamiento perfecto.
      */   
     fun obtenerApareamiento(): MutableSet<Arista> = M
 
     /** 
      * Verifica si un grafo no dirigido es completo.
      * 
-     * Tiempo de ejecución: O(1).
+     * Tiempo de ejecución: O(|E|).
      * Precondición: true.
      * Postcondición: [esCompleto] es -True si [g] es completo.
      *                                -False de otra forma. 
      */
-    private fun esCompleto(g: GrafoNoDirigido): Boolean = completo
+    private fun esCompleto(g: GrafoNoDirigido): Boolean {
+        val nLados = g.obtenerNumeroDeLados()
+        
+        if (nLados != n * (n - 1) / 2) return false
+
+        for (i in 0 until n) {
+            val estaConectado = BooleanArray(n)
+            estaConectado[i] = true
+
+            g.adyacentes(i).forEach { estaConectado[it.elOtroVertice(i)] = true }
+
+            if (!estaConectado.all { it }) return false
+        }
+
+        return true       
+    }
 }

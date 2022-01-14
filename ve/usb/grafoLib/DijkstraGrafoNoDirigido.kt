@@ -15,15 +15,15 @@ import java.util.LinkedList
  * Se crea el árbol de caminos de costo mínimo con la creación de
  * una instancia.
  *
- * @param [g]: dígrafo sobre el que se ejecuta el algoritmo.
+ * @param [g]: grafo no dirigido sobre el que se ejecuta el algoritmo.
  * @param [s]: vértice fuente desde el que encontrarán los caminos
  *             de costo mínimo.
  *
  * @throws [RuntimeException] El vértice fuente [s] no pertenece al conjunto
  *                            de vértices del grafo.
  *
- * @throws [RuntimeException] El dígrafo [g] tiene un lado negativo alcanzable
- *                            desde [s].
+ * @throws [RuntimeException] El grafo no dirigido [g] tiene un lado 
+ *                            negativo alcanzable desde [s].
  */
 public class DijkstraGrafoNoDirigido(val g: GrafoNoDirigido, val s: Int) {
     private val n = g.obtenerNumeroDeVertices()
