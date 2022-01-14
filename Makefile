@@ -36,7 +36,7 @@ all:	\
 	$(PKG_GRAPHLIB)/DijkstraGrafoNoDirigido.class\
 	$(PKG_GRAPHLIB)/ApareamientoPerfectoAvido.class\
 	$(PKG_GRAPHLIB)/ApareamientoVertexScan.class\
-	$(PKG_GRAPHLIB)/HeuristicaRPP.class\
+	$(PKG_GRAPHLIB)/HeuristicaRPPKt.class\
 	
 
 $(PKG_GRAPHLIB)/Color.class: $(PKG_GRAPHLIB)/Color.kt
@@ -141,7 +141,7 @@ $(PKG_GRAPHLIB)/ApareamientoPerfectoAvido.class: $(PKG_GRAPHLIB)/ApareamientoPer
 $(PKG_GRAPHLIB)/ApareamientoVertexScan.class: $(PKG_GRAPHLIB)/ApareamientoVertexScan.kt
 	$(KC) $(KFLAG) $(PKG_GRAPHLIB): $(PKG_GRAPHLIB)/ApareamientoVertexScan.kt
 
-$(PKG_GRAPHLIB)/HeuristicaRPP.class: $(PKG_GRAPHLIB)/HeuristicaRPP.kt
+$(PKG_GRAPHLIB)/HeuristicaRPPKt.class: $(PKG_GRAPHLIB)/HeuristicaRPP.kt
 	$(KC) $(KFLAG) $(PKG_GRAPHLIB): $(PKG_GRAPHLIB)/HeuristicaRPP.kt
 
 clean:

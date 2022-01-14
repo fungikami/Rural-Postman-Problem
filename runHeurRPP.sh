@@ -1,5 +1,3 @@
 #!/bin/bash
 
-LIB='ve/usb/grafoLib'
-
-kotlin $(LIB)/HeuristicaRPP $*
+kotlin -cp . ve.usb.grafoLib.HeuristicaRPP $*

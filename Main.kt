@@ -12,7 +12,7 @@ fun main(args: Array<String>) {
 
     // testAPA(filename)
     // testAPAVS(filename)
-    pruebasCicloEuleriano()
+    // testCicloEuleriano()
 }
 
 fun testAPA(filename: String) {
@@ -37,7 +37,7 @@ fun testAPAVS(filename: String) {
     println(apa.obtenerApareamiento().joinToString(" - "))
 }
 
-fun pruebasCicloEuleriano() {
+fun testCicloEuleriano() {
     /* -------------------------------
     Prueba 1
     Prueba de cicloEuleriano.jpeg 
