@@ -28,7 +28,6 @@ import java.util.LinkedList
 public class DijkstraGrafoNoDirigido(val g: GrafoNoDirigido, val s: Int) {
     private val n = g.obtenerNumeroDeVertices()
     private val dist = DoubleArray(n) { POSITIVE_INFINITY }
-    private val pred = Array<Arista?>(n) { null }
 
     init {
         g.chequearVertice(s)
@@ -47,7 +46,9 @@ public class DijkstraGrafoNoDirigido(val g: GrafoNoDirigido, val s: Int) {
             val u = Q.extraerMinimo().first
 
             g.adyacentes(u).forEach {
-                relajacionColaDePrioridad(Q, it)
+                val v = it.elOtroVertice(u)
+                val p = it.peso()
+                relajacionColaDePrioridad(Q, u, v, p)
             }
         }
     }
@@ -62,15 +63,12 @@ public class DijkstraGrafoNoDirigido(val g: GrafoNoDirigido, val s: Int) {
      *               lados de g.
      * Postcondición: dist[p.v] <= dist[p.v]0.            
      */
-    private fun relajacionColaDePrioridad(Q: ColaDePrioridad, p: Arista) {
-        val u = p.cualquieraDeLosVertices()
-        val v = p.elOtroVertice(u)
+    private fun relajacionColaDePrioridad(Q: ColaDePrioridad, u: Int, v: Int, peso: Double) {
 
-        if (dist[v] > dist[u] + p.peso()) {
-            Q.disminuirClave(Pair(v, dist[v]), dist[u] + p.peso)
+        if (dist[v] > dist[u] + peso) {
+            Q.disminuirClave(Pair(v, dist[v]), dist[u] + peso)
 
-            dist[v] = dist[u] + p.peso
-            pred[v] = p
+            dist[v] = dist[u] + peso
         }
     }
 
@@ -112,33 +110,6 @@ public class DijkstraGrafoNoDirigido(val g: GrafoNoDirigido, val s: Int) {
         return dist[v]
     }
 
-    /** 
-     * Retorna el camino de costo mínimo desde s hasta v.
-     *
-     * @throws [RuntimeException] El vértice v dado está fuera del 
-     *                            intervalo [0..|V|).
-     * 
-     * Tiempo de ejecución: O(E) en el peor caso.
-     * Precondición: [v] pertenece al conjunto de vértices del dígrafo.
-     * Postcondición: [obtenerCaminoDeCostoMinimo] es un objeto iterable cuyos
-     *                elementos son los aristas que conforman el camino de costo
-     *                mínimo desde [s] hasta [v] en orden.
-     */
-    fun obtenerCaminoDeCostoMinimo(v: Int):  Iterable<Arista> {
-        // Se usa una pila para guardar la secuencia de aristas a retornar
-        val S = LinkedList<Arista>()
-        var u = pred[v]
-
-        if (existeUnCamino(v)) {
-            while (u != null) {
-                S.addFirst(u)
-                u = pred[u.cualquieraDeLosVertices()]
-            }
-        }
-
-        return S
-    }
-    
     /**
      * Implementación del TAD Cola de Prioridad mediante un Min-Heap,
      * donde los elementos con menor valor tienen prioridad más alta.
