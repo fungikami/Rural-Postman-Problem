@@ -13,7 +13,9 @@ import java.util.Scanner
 import java.lang.StringBuilder
 
 /**
- * Clase que representa implementacion de una lista enlazada
+ * Implementación de un algoritmo ávido para resolver el
+ * Problema del Cartero Rural (RPP) basado en algoritmo propuesto
+ * por .
  */
 public class HeuristicaRPP {
     companion object {
