@@ -7,6 +7,10 @@ package ve.usb.grafoLib
 
 import kotlin.system.measureTimeMillis
 import kotlin.system.exitProcess
+import java.io.File
+import java.io.FileInputStream
+import java.util.Scanner
+import java.lang.StringBuilder
 
 /**
  * Clase que representa implementacion de una lista enlazada
@@ -96,53 +100,56 @@ public class HeuristicaRPP {
                 var aux = sc.nextLine()!!.split(" ") // Línea VERTICES : <nro. de vértices>
                 val numDeVertices = aux[aux.size - 1].strip()!!.toInt()
                 
+                // Construye grafo G y conjunto R
                 val g = GrafoNoDirigido(numDeVertices)
+                val R = mutableSetOf<Arista>()
 
-                aux = sc.nextLine()!!.split(" ")    // Línea ARISTAS_REQ : <nro. delados requeridosúmero>
-                val nAristasReq = aux[aux.size - 1].strip()!!.toInt() 
+                aux = sc.nextLine()!!.split(" ")    // Línea ARISTAS_REQ : <nro. de lados requeridos>
+                val aristasReq = aux[aux.size - 1].strip()!!.toInt() 
 
-                aux = sc.nextLine()!!.split(" ") // Líne ARISTAS_NOREQ : <nro. de lados no requeridos>
+                aux = sc.nextLine()!!.split(" ")    // Línea ARISTAS_NOREQ : <nro. de lados no requeridos>
                 val aristasNoReq = aux[aux.size - 1].strip()!!.toInt() 
 
-                /* La segunda línea contiene el número de lados, que será
-                la cantidad de líneas a leer del archivo */
-                repeat(sc.nextLine()!!.toInt()) {
-                    val a = sc.nextLine()!!.split(' ')
-
-                    this.agregarArco(Arco(
-                        a[0].toInt(), 
-                        a[1].toInt(),
-                        if (conPeso) a[2].toDouble() else 0.0
-                        )
-                    )
+                // Agregar aristas requeridas a G y R
+                sc.nextLine()   // Saltar LISTA_ARISTAS_REQ
+                repeat(aristasReq) {
+                    aux = Regex("[0-9]+").findAll(sc.nextLine()!!)
+                        .map(MatchResult::value)
+                        .toList()
+                    
+                    val a = Arista(aux[0].toInt(), aux[1].toInt(), aux[2].toInt())
+                    g.agregarArista(a)
+                    R.add(a)
                 }
+
+                // Agregar aristas no requeridas a G
+                sc.nextLine()   // Saltar LISTA_ARISTAS_NOREQ
+                repeat(aristasReq) {
+                    aux = Regex("[0-9]+").findAll(sc.nextLine()!!)
+                        .map(MatchResult::value)
+                        .toList()
+                    
+                    val a = Arista(aux[0].toInt(), aux[1].toInt(), aux[2].toInt())
+                    g.agregarArista(a)
+                }
+
+                // Ejecuta el algoritmo de RPP
+                var ciclo: Iterable<Arista>
+                val ms = measureTimeMillis { 
+                    ciclo = ejecutarAlgoritmo(g, R, vertexScan)
+                }
+                
+                // Imprime salida
+                ciclo.forEach { print("${it.cualquieraDeLosVertices()} ") }
+                val u = ciclo.last().cualquieraDeLosVertices()
+                println(ciclo.last().elOtroVertice(u))
+                println(ciclo.sumOf { it.peso() }.toInt())
+                println("%.3f segs.".format(ms / 1000.0))
+
             } else {
                 println("El archivo indicado en $nombreArchivo no existe o no se puede leer.")
                 return
             } 
-
-            // Crear grafo no dirigido conexo G = <V, E>
-            
-            
-            g.agregarArista(Arista(0, 1, 2.0))
-            
-            // Obtener R ⊆ E
-            val R = mutableSetOf<Arista>()
-
-            R.add(Arista(0, 1, 2.0))
-
-
-            var ciclo: Iterable<Arista>
-            val ms = measureTimeMillis { 
-                ciclo = ejecutarAlgoritmo(g, R, vertexScan)
-            }
-            
-            // Imprime salida
-            ciclo.forEach { print("${it.cualquieraDeLosVertices()} ") }
-            val u = ciclo.last().cualquieraDeLosVertices()
-            println(ciclo.last().elOtroVertice(u))
-            println(ciclo.sumOf { it.peso() }.toInt())
-            println("%.3f segs.".format(ms / 1000.0))
         }
     }
 }
