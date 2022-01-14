@@ -117,7 +117,7 @@ public class HeuristicaRPP {
                         .map(MatchResult::value)
                         .toList()
                     
-                    val a = Arista(aux[0].toInt(), aux[1].toInt(), aux[2].toInt())
+                    val a = Arista(aux[0].toInt(), aux[1].toInt(), aux[2].toDouble())
                     g.agregarArista(a)
                     R.add(a)
                 }
@@ -129,7 +129,7 @@ public class HeuristicaRPP {
                         .map(MatchResult::value)
                         .toList()
                     
-                    val a = Arista(aux[0].toInt(), aux[1].toInt(), aux[2].toInt())
+                    val a = Arista(aux[0].toInt(), aux[1].toInt(), aux[2].toDouble())
                     g.agregarArista(a)
                 }
 
