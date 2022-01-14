@@ -20,15 +20,60 @@ public class CicloEulerianoGrafoNoDirigido(val g: GrafoNoDirigido) {
 
     private var euleriano = true
     private var ladosVisitados = mutableSetOf<Arista>()
-    private var cicloEuler = Array<Arista?>(g.obtenerNumeroDeLados()) { null }
+    private var cicloEuler = Array<Arista>(g.obtenerNumeroDeLados()) { Arista(0, 1) }
     private var cicloEulerIndex = g.obtenerNumeroDeLados() - 1
 
     init {
         if (!esConexo(g)) throw RuntimeException("El grafo no es conexo.")
 
-        // Obtiene los aristas del ciclo euleriano
+        // Verifica si tiene un ciclo euleriano (grado par)
+        for (v in 0 until n) {
+            if (g.grado(v) % 2 == 1) {
+                euleriano = false
+                break
+            }
+        }
+        
+        // Obtiene las aristas del ciclo euleriano
         var aristas = g.aristas()
-        eulerTour(g, aristas.first())
+        var u = aristas.first().cualquieraDeLosVertices()
+
+        eulerTour(g, aristas.first(), u)
+    
+        // Reorienta los lados
+        // Obtiene los primero dos lados para saber la "orientación" del ciclo
+        val (l1, l2) = Pair(cicloEuler[0], cicloEuler[1])
+
+        val u1 = l1.cualquieraDeLosVertices()
+        val v1 = l1.elOtroVertice(u1)
+        val u2 = l2.cualquieraDeLosVertices()
+        val v2 = l1.elOtroVertice(u2)
+
+        if (v1 == u2) {
+        } else if (u1 == u2) {
+            cicloEuler[0] = Arista(v1, u1, l1.peso())
+        } else if (v1 == v2) {
+            cicloEuler[1] = Arista(v2, u2, l2.peso())
+        } else {
+            cicloEuler[0] = Arista(v1, u1, l1.peso())
+            cicloEuler[1] = Arista(v2, u2, l2.peso())
+        }
+
+        var m = cicloEuler.size
+        var vAnterior = cicloEuler[0].cualquieraDeLosVertices()
+
+        // Reorienta las aristas "mal orientadas en el ciclo"
+        for (i in 0 until m) {
+            var uActual = cicloEuler[i].cualquieraDeLosVertices()
+
+            if (vAnterior != uActual) {
+                val vActual = cicloEuler[i].elOtroVertice(uActual)
+                cicloEuler[i] = Arista(vActual, uActual, cicloEuler[i].peso())
+            }
+            
+            uActual = cicloEuler[i].cualquieraDeLosVertices()
+            vAnterior = cicloEuler[i].elOtroVertice(uActual)
+        }
     }
 
     /**
@@ -43,12 +88,13 @@ public class CicloEulerianoGrafoNoDirigido(val g: GrafoNoDirigido) {
      *               [lado] es un arista perteneciente al dígrafo.
      * Postcondición: true
      */
-    private fun eulerTour(g: GrafoNoDirigido, lado: Arista) {
+    private fun eulerTour(g: GrafoNoDirigido, lado: Arista, verticeInicial: Int) {
         ladosVisitados.add(lado)
-        
-        g.adyacentes(lado.cualquieraDeLosVertices()).forEach {
+        val verticeFinal = lado.elOtroVertice(verticeInicial)
+
+        g.adyacentes(verticeFinal).forEach {
             // Si no se había visitado el lado se avanza por el camino
-            if (ladosVisitados.add(it)) eulerTour(g, it)
+            if (ladosVisitados.add(it)) eulerTour(g, it, verticeFinal)
         }
         // Terminado un camino se agrega el lado al ciclo
         cicloEuler[cicloEulerIndex] = lado
@@ -106,7 +152,7 @@ public class CicloEulerianoGrafoNoDirigido(val g: GrafoNoDirigido) {
      */ 
     fun obtenerCicloEuleriano(): Iterable<Arista> {
         if (!tieneCicloEuleriano()) throw RuntimeException("El grafo no tiene ciclo euleriano.")
-        return cicloEuler.filterNotNull()
+        return cicloEuler.toMutableList()
     }
 
     /**

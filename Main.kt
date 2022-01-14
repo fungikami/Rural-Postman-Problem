@@ -77,8 +77,7 @@ fun pruebasCicloEuleriano() {
 
         if (esEuleriano) {
             val ciclo = euler.obtenerCicloEuleriano()
-            println("LADOS DEL CICLO")
-            println(ciclo)
+
             val n = ciclo.count()
 
             if (esEuleriano) {

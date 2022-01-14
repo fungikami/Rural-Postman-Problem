@@ -26,7 +26,7 @@ public class CicloEuleriano(val g: GrafoDirigido) {
     init {
         if (!esFC(g)) throw RuntimeException("El grafo no es fuertemente conexo.")
 
-        // Verifica si tiene un grafo euleriano
+        // Verifica si tiene un ciclo euleriano
         for (v in 0 until n) {
             if (g.gradoExterior(v) != g.gradoInterior(v)) {
                 euleriano = false
