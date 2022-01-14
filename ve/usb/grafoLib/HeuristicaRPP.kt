@@ -35,6 +35,8 @@ public class HeuristicaRPP {
             // Si G' no es conexo (sin importar si es o no par)
             if (!esConexo) {
                 // Líneas 9 a 15
+                // Construye grafo G_t de componentes conexas de G'
+                // (El peso de cada arista es el del camino de costo minimo de (vi, vj))
                 // 
 
                 //
@@ -44,6 +46,19 @@ public class HeuristicaRPP {
 
             if (!esConexo || !esPar(gP)) {
                 // Líneas 16 a 23
+
+                // Determina conjunto de vértices V_0 de grado impar 
+
+
+                // Construye grafo G_0 con V_0
+
+
+                // Determina apareamiento perfecto
+
+
+                // Determina CCM y agrega lados a G'
+
+
             }
 
             gP.agregarArista(Arista(0, 1, 2.0))
@@ -73,91 +88,75 @@ public class HeuristicaRPP {
                 exitProcess(1)
             }
 
+            // Verifica si el archivo existe
+            if (!File(nombreArchivo).exists()) {
+                println("El archivo indicado en $nombreArchivo no existe o no se puede leer.")
+                exitProcess(1)
+            }
+
             val vertexScan = args[0] == "v"
             val nombreArchivo = args[1]
 
-            // NOMBRE : <name of instance>
-            // COMENTARIO : <comment>
-            // VERTICES : <number of vertices>
-            // ARISTAS_REQ : <number of required edges>
-            // ARISTAS_NOREQ : <number of non-required edges>
-            // LISTA_ARISTAS_REQ :
-            // (<u1>,<u2>) coste <cu1> <cu2>
-            // .
-            // .
-            // .
-            // LISTA_ARISTAS_NOREQ :
-            // (<v1>,<v2>) coste <cv1> <cv2>
-            // .
-            // .
-            // .
+            val sc = Scanner(FileInputStream(nombreArchivo))
+            sc.nextLine()   // Saltar Nombre
+            sc.nextLine()   // Saltar Comentario
 
-            if (File(nombreArchivo).exists()) {
-                val sc = Scanner(FileInputStream(nombreArchivo))
-                sc.nextLine()   // Saltar Nombre
-                sc.nextLine()   // Saltar Comentario
+            var aux = sc.nextLine()!!.split(" ") // Línea VERTICES : <nro. de vértices>
+            val numDeVertices = aux[aux.size - 1].strip()!!.toInt()
+            
+            // Construye grafo G y conjunto R
+            val g = GrafoNoDirigido(numDeVertices)
+            val R = mutableSetOf<Arista>()
 
-                var aux = sc.nextLine()!!.split(" ") // Línea VERTICES : <nro. de vértices>
-                val numDeVertices = aux[aux.size - 1].strip()!!.toInt()
+            aux = sc.nextLine()!!.split(" ")    // Línea ARISTAS_REQ : <nro. de lados requeridos>
+            val aristasReq = aux[aux.size - 1].strip()!!.toInt() 
+
+            aux = sc.nextLine()!!.split(" ")    // Línea ARISTAS_NOREQ : <nro. de lados no requeridos>
+            val aristasNoReq = aux[aux.size - 1].strip()!!.toInt() 
+
+            // Agregar aristas requeridas a G y R
+            sc.nextLine()   // Saltar LISTA_ARISTAS_REQ
+            repeat(aristasReq) {
+                aux = Regex("[0-9]+").findAll(sc.nextLine()!!)
+                    .map(MatchResult::value)
+                    .toList()
                 
-                // Construye grafo G y conjunto R
-                val g = GrafoNoDirigido(numDeVertices)
-                val R = mutableSetOf<Arista>()
+                val a = Arista(
+                    aux[0].toInt(), 
+                    aux[1].toInt(), 
+                    aux[2].toDouble()
+                )
+                g.agregarArista(a)
+                R.add(a)
+            }
 
-                aux = sc.nextLine()!!.split(" ")    // Línea ARISTAS_REQ : <nro. de lados requeridos>
-                val aristasReq = aux[aux.size - 1].strip()!!.toInt() 
-
-                aux = sc.nextLine()!!.split(" ")    // Línea ARISTAS_NOREQ : <nro. de lados no requeridos>
-                val aristasNoReq = aux[aux.size - 1].strip()!!.toInt() 
-
-                // Agregar aristas requeridas a G y R
-                sc.nextLine()   // Saltar LISTA_ARISTAS_REQ
-                repeat(aristasReq) {
-                    aux = Regex("[0-9]+").findAll(sc.nextLine()!!)
-                        .map(MatchResult::value)
-                        .toList()
-                    
-                    val a = Arista(
-                        aux[0].toInt(), 
-                        aux[1].toInt(), 
-                        aux[2].toDouble()
-                    )
-                    g.agregarArista(a)
-                    R.add(a)
-                }
-
-                // Agregar aristas no requeridas a G
-                sc.nextLine()   // Saltar LISTA_ARISTAS_NOREQ
-                repeat(aristasReq) {
-                    aux = Regex("[0-9]+").findAll(sc.nextLine()!!)
-                        .map(MatchResult::value)
-                        .toList()
-                    
-                    val a = Arista(
-                        aux[0].toInt(), 
-                        aux[1].toInt(), 
-                        aux[2].toDouble()
-                    )
-                    g.agregarArista(a)
-                }
-
-                // Ejecuta el algoritmo de RPP
-                var ciclo: Iterable<Arista>
-                val ms = measureTimeMillis { 
-                    ciclo = ejecutarAlgoritmo(g, R, vertexScan)
-                }
+            // Agregar aristas no requeridas a G
+            sc.nextLine()   // Saltar LISTA_ARISTAS_NOREQ
+            repeat(aristasReq) {
+                aux = Regex("[0-9]+").findAll(sc.nextLine()!!)
+                    .map(MatchResult::value)
+                    .toList()
                 
-                // Imprime salida
-                ciclo.forEach { print("${it.cualquieraDeLosVertices()} ") }
-                val u = ciclo.last().cualquieraDeLosVertices()
-                println(ciclo.last().elOtroVertice(u))
-                println(ciclo.sumOf { it.peso() }.toInt())
-                println("%.3f segs.".format(ms / 1000.0))
+                val a = Arista(
+                    aux[0].toInt(), 
+                    aux[1].toInt(), 
+                    aux[2].toDouble()
+                )
+                g.agregarArista(a)
+            }
 
-            } else {
-                println("El archivo indicado en $nombreArchivo no existe o no se puede leer.")
-                return
-            } 
+            // Ejecuta el algoritmo RPP
+            var ciclo: Iterable<Arista>
+            val ms = measureTimeMillis { 
+                ciclo = ejecutarAlgoritmo(g, R, vertexScan)
+            }
+            
+            // Imprime salida
+            ciclo.forEach { print("${it.cualquieraDeLosVertices()} ") }
+            val u = ciclo.last().cualquieraDeLosVertices()
+            println(ciclo.last().elOtroVertice(u))
+            println(ciclo.sumOf { it.peso() }.toInt())
+            println("%.3f segs.".format(ms / 1000.0))
         }
     }
 }
