@@ -57,17 +57,15 @@ public class ApareamientoVertexScan(g: GrafoNoDirigido) {
             }
         }
         
-        println("VP Inicial (tamaño): ${vP.size}")
         while (!vP.isEmpty()) {
-            println("VP (tamaño): ${vP.size}")
             // Escoge aleatoriamente un vértice i de vP
             val i = vP.random()
 
             // Escoge el lado (i, j) con con menor costo
             val lado: Arista
-            var j = i
-            while (!vP.remove(eP[indV[j]].elOtroVertice(i))) j++
-            lado = eP[indV[j]] 
+            var j = indV[i]
+            while (!vP.remove(eP[j].elOtroVertice(i))) j++
+            lado = eP[j] 
 
             M.add(lado)
             

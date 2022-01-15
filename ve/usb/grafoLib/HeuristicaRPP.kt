@@ -152,8 +152,6 @@ public class HeuristicaRPP {
                  } else {
                     ApareamientoPerfectoAvido(g0).obtenerApareamiento()
                 }
-
-                println("Apareamiento:${M.count()}")
     
                 val ladosAgregar = mutableListOf<Arista>()
                 mapaLista = mapaInverso.toMutableList()
@@ -373,6 +371,7 @@ public class HeuristicaRPP {
             }
             
             // Imprime salida
+            /* ----------- PARA SALIDA ESTÁNDAR -----------
             ciclo.forEach { print("${it.cualquieraDeLosVertices() + 1} ") }
             val u = ciclo.last().cualquieraDeLosVertices()
             println(ciclo.last().elOtroVertice(u) + 1)
@@ -380,11 +379,12 @@ public class HeuristicaRPP {
             val costoTotal = ciclo.sumOf { it.peso() }.toInt()
             println(costoTotal)
             println("%.3f segs.".format(ms / 1000.0))
+            ------------------------------------------------- */
 
-            val stdev = desv(costoTotal, 17830)
-
-            println(stdev)
-            println(stdev/100 + 1)
+            val nombre = args[1].split("/").last()
+            val costo = ciclo.sumOf { it.peso() }.toInt()
+            val tiempo = ms / 1000.0
+            println("$nombre,$costo,$tiempo")
         }
     }
 }
