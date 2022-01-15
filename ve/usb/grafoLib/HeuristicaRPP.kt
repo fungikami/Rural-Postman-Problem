@@ -25,6 +25,8 @@ public class HeuristicaRPP {
         
         private val mapa = HashMap<Int, Int>()
         private var mapaInverso = IntArray(0)
+        private val numVR: Int
+            get() = mapa.size
 
         private fun ejecutarAlgoritmo(
             g: GrafoNoDirigido,
@@ -32,8 +34,7 @@ public class HeuristicaRPP {
             usarVertexScan: Boolean
         ): Iterable<Arista> {
             // Crea grafo G_R = <V_R, R> (V_R son los vértices de R)
-            val n = g.obtenerNumeroDeVertices()
-            val gP = GrafoNoDirigido(n)
+            var gP = GrafoNoDirigido(numVR)
             R.forEach {
                 val u = it.cualquieraDeLosVertices()
                 val v = it.elOtroVertice(u)
@@ -48,79 +49,148 @@ public class HeuristicaRPP {
             val esConexo = numCC == 1
             
             // Obtiene la matriz de costos de caminos de costo mínimo
-            val CCM = calcularMatrizCostoMinimo(g)
-            println("Matriz de costos:")
-            CCM.forEach { println(it.joinToString(", ")) }
+            val (matCCM, dijks) = calcularCostosMinimos(g)
 
-            /*
-                0  3   6  3   7  9  5         
-                3  0   4  2   6  6  2
-                6  4   0  6  10  7  3
-                3  2   6  0   4  8  4 
-                7  6  10  4   0  5  8
-                9  6   7  8   5  0  4
-                5  2   3  4   8  4  0
-            */
-            
             // Si G' no es conexo (sin importar si es o no par)
+            var mapaLista: MutableList<Int>
             if (!esConexo) {
                 // Líneas 9 a 15
-                // Construye grafo G_t de componentes conexas de G'
-                // (El peso de cada arista es el del camino de costo minimo de (vi, vj))
+                /* Construye grafo G_t de componentes conexas de G'
+                (El peso de cada arista es el del camino de costo minimo de (vi, vj)) */
                 val gT = GrafoNoDirigido(numCC)
 
                 // Crea un arreglo con los vertices de cada componente conexa
                 val vertCC = Array(numCC) { ArrayList<Int>() }
-                for (v in 0 until n) vertCC[cc.obtenerComponente(v)].add(v)
+                for (v in 0 until numVR) vertCC[cc.obtenerComponente(v)].add(v)
 
                 // Por cada par de componentes conexas, hallar costo mínimo
-                val eT0 = ArrayList<Arista>()
+                val mapaEt0 = HashMap<Pair<Int, Int>, Pair<Int, Int>>()
+                
                 for (u in 0 until numCC) {
                     for (v in u+1 until numCC) {
-                        val a = costoMinComponente(CCM, vertCC[u], vertCC[v])
-                        gT.agregarArista(Arista(u, v, a.peso()))
-                        eT0.add(a)
+                        val (s, t, costo) = costoMinComponente(matCCM, vertCC[u], vertCC[v])
+                        val lado = Arista(u, v, costo)
+                        gT.agregarArista(lado)
+                        
+                        mapaEt0[Pair(u, v)] = Pair(s, t)
                     }
                 }
 
-                // Obtiene los lados del árbol mínimo cobertor
+                // Obtiene los lados del árbol mínimo cobertor y los lados asociados a CCM
                 val eMST = ArbolMinimoCobertorPrim(gT).obtenerLados()
 
-                // Elimina los lados duplicados de E_t0
+                val Et = mutableSetOf<Arista>()
+                eMST.forEach {
+                    val u = it.cualquieraDeLosVertices()
+                    val v = it.elOtroVertice(u)
+                    
+                    val (s, t) = mapaEt0[Pair(u, v)]!!
+                    dijks[s].obtenerCaminoDeCostoMinimo(t).forEach { lado ->
+                        Et.add(lado)
+                    }
+                }
 
+                // Agrega a G' vértices en E_t que no se encuentren VR
+                mapaLista = mapaInverso.toMutableList()
+                Et.forEach {
+                    val u = it.cualquieraDeLosVertices()
+                    val v = it.elOtroVertice(u)
+                    
+                    if (!mapa.containsKey(u)) {
+                        mapa[u] = numVR
+                        mapaLista.add(u)
+                    }
 
-                // Agrega G' vértices en E_t que no se encuentren VR
+                    if (!mapa.containsKey(v)) {
+                        mapa[v] = numVR
+                        mapaLista.add(v)
+                    }
+                }
 
+                mapaInverso = mapaLista.toIntArray()
 
                 // Agrega a G' los lados E_t, se permite lados duplicados
+                val temp = gP
+                gP = GrafoNoDirigido(numVR)
+                temp.aristas().forEach { gP.agregarArista(it) }
+                Et.forEach { 
+                    val u = it.cualquieraDeLosVertices()
+                    val v = it.elOtroVertice(u)
+                    gP.agregarArista(Arista(f(u), f(v), it.peso()))
+                }
 
             }
 
             if (!esConexo || !esPar(gP)) {
-                // Líneas 16 a 23
+                // Determina el conjunto de vértices V_0
+                // mapa GR -> G0
+                val mapaV0 = HashMap<Int, Int>()
+                val mapaInversoV0 = mutableListOf<Int>()
 
-                // Determina conjunto de vértices V_0 de grado impar 
-                // val v0 = MutableSet<Int>() 
-                // for (v in 0 until n) {
-                //     if (gP.grado(v) % 2 == 1) v0.add(v)
-                // }
+                for (u in 0 until gP.obtenerNumeroDeVertices()) {
+                    if (gP.grado(u) % 2 == 1) {
+                        mapaV0[u] = mapaInversoV0.size
+                        mapaInversoV0.add(u)
+                    }
+                }
 
-                // Construye grafo G_0 con V_0
-                // val G0 = GrafoNoDirigido(v0.size)
-
+                // Construye grafo G_0
+                val numV0 = mapaV0.size
+                val g0 = GrafoNoDirigido(numV0)
+                for (u in 0 until numV0) {
+                    for (v in u+1 until numV0) {
+                        g0.agregarArista(Arista(
+                                u, v,
+                                matCCM[fInversa(mapaInversoV0[u])][fInversa(mapaInversoV0[v])]
+                            )
+                        )
+                    }
+                }
 
                 // Determina apareamiento perfecto M
-                // val M = if (usarVertexScan) ApareamientoVertexScan(G0) else ApareamientoPerfectoAvido(G0)
+                val M = if (usarVertexScan) {
+                    ApareamientoVertexScan(g0).obtenerApareamiento()
+                 } else {
+                    ApareamientoPerfectoAvido(g0).obtenerApareamiento()
+                }
+    
+                val ladosAgregar = mutableListOf<Arista>()
+                mapaLista = mapaInverso.toMutableList()
 
-                // M.forEach {
-                //     Obtener el CCMvi,vj asociado a (vi, vj);
-                //     ParaCada lado (i, j) ∈ CCMvi,vj hacer
-                //         si i /∈ G0 entonces se agrega el vértice i a G0
-                //         si j /∈ G0 entonces se agrega el vértice j a G0
-                //         Se agrega el lado (i, j) a G0 sin importar que se encuentre duplicado
-                // }
+                M.forEach {
+                    // Obtiene el CCM
+                    val u = it.cualquieraDeLosVertices()
+                    val v = it.elOtroVertice(u)
+                    
+                    // G_0 -> G_R -> G
+                    val (s, t) = Pair(fInversa(mapaInversoV0[u]), fInversa(mapaInversoV0[v]))
 
+                    dijks[s].obtenerCaminoDeCostoMinimo(t).forEach {
+                        val i = it.cualquieraDeLosVertices()
+                        val j = it.elOtroVertice(i)
+                        
+                        if (!mapa.containsKey(i)) {
+                            mapa[i] = numVR
+                            mapaLista.add(i)
+                        }
+
+                        if (!mapa.containsKey(j)) {
+                            mapa[j] = numVR
+                            mapaLista.add(j)
+                        }
+
+                        ladosAgregar.add(Arista(f(i), f(j), it.peso()))
+                    }
+                }
+
+                // Agrega a G' los lados de los CCM, se permite lados duplicados
+                val temp = gP
+                gP = GrafoNoDirigido(numVR)
+                temp.aristas().forEach { gP.agregarArista(it) }
+                ladosAgregar.forEach { gP.agregarArista(it) }
             }
+
+            println("gP:\n$gP")
 
             // ***************************************************************
             // OJOOOO, DEVOLVER QUE LOS VERTICES COMIENCEN DESDE 1 Y NO DESDE 0
@@ -129,28 +199,38 @@ public class HeuristicaRPP {
         }
 
         private fun costoMinComponente(
-            spl: Array<DoubleArray>, 
+            mat: Array<DoubleArray>, 
             comp1: ArrayList<Int>, 
             comp2: ArrayList<Int>
-        ): Arista {
-            var (i, j, min) = Triple(-1, -1, POSITIVE_INFINITY)
+        ): Triple<Int, Int, Double> {
+            
+            // Función spl
+            val spl = { u: Int, v: Int -> mat[u][v] }
+
+            var (i, j, costoMin) = Triple(-1, -1, POSITIVE_INFINITY)
 
             comp1.forEach { u ->
                 comp2.forEach { v ->
-                    val costo = spl[u][v]
-                    if (costo < min) {
-                        i = u
-                        j = v
-                        min = costo
+                    val costo = spl(fInversa(u), fInversa(v))
+                    if (costo < costoMin) {
+                        i = fInversa(u)
+                        j = fInversa(v)
+                        costoMin = costo
                     }
                 }
             }
 
-            return Arista(i, j, min)
+            return Triple(i, j, costoMin)
         }
 
+        /**
+         * Mapea  G -> GR
+         */
         private fun f(v: Int): Int = mapa[v]!!
 
+        /**
+         * Mapea  GR -> G
+         */
         private fun fInversa(v: Int): Int = mapaInverso[v]
 
         private fun esPar(g: GrafoNoDirigido): Boolean {
@@ -168,12 +248,16 @@ public class HeuristicaRPP {
             return paridad.all { it }
         }
 
-        private fun calcularMatrizCostoMinimo(g: GrafoNoDirigido): Array<DoubleArray> {
+        private fun calcularCostosMinimos(g: GrafoNoDirigido):
+            Pair<Array<DoubleArray>, Array<DijkstraGrafoNoDirigido>> {
+                
             val n = g.obtenerNumeroDeVertices()
             val W = Array<DoubleArray>(n) { DoubleArray(n) }
+            val dijks = Array<DijkstraGrafoNoDirigido?>(n) { null }
             
             for (i in 0 until n) {
                 val dij = DijkstraGrafoNoDirigido(g, i)
+                dijks[i] = dij
 
                 for (j in i + 1 until n) {
                     W[i][j] = dij.costoHasta(j)
@@ -181,7 +265,7 @@ public class HeuristicaRPP {
                 }
             }
 
-            return W
+            return Pair(W, dijks.filterNotNull().toTypedArray())
         }
 
         // -------- EJECUCIÓN DEL CLIENTE -------- 
@@ -219,7 +303,6 @@ public class HeuristicaRPP {
             val aristasNoReq = aux[aux.size - 1].trim().toInt() 
 
             val mapaLista = ArrayList<Int>()
-            var k = 0
 
             // Salta LISTA_ARISTAS_REQ
             sc.nextLine()
@@ -241,15 +324,13 @@ public class HeuristicaRPP {
                 val a = Arista(u, v, peso)
 
                 if (!mapa.containsKey(u)) {
-                    mapa[u] = k
+                    mapa[u] = numVR
                     mapaLista.add(u)
-                    k++
                 }
 
                 if (!mapa.containsKey(v)) {
-                    mapa[v] = k
+                    mapa[v] = numVR
                     mapaLista.add(v)
-                    k++
                 }
 
                 g.agregarArista(a)
@@ -305,9 +386,9 @@ public class HeuristicaRPP {
             }
             
             // Imprime salida
-            ciclo.forEach { print("${it.cualquieraDeLosVertices() - 1} ") }
+            ciclo.forEach { print("${it.cualquieraDeLosVertices() + 1} ") }
             val u = ciclo.last().cualquieraDeLosVertices()
-            println(ciclo.last().elOtroVertice(u) - 1)
+            println(ciclo.last().elOtroVertice(u) + 1)
             println(ciclo.sumOf { it.peso() }.toInt())
             println("%.3f segs.".format(ms / 1000.0))
         }
