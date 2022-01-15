@@ -13,6 +13,13 @@ import java.io.FileInputStream
 import java.util.Scanner
 import java.lang.StringBuilder
 
+// *******************************************************
+// esPar puede utilizar g.grado() ?
+// ay compadre, seguro que el peso es entero siempre no?
+//
+//
+// *******************************************************
+
 /**
  * Implementación del algoritmo heurístico para resolver el
  * Problema del Cartero Rural (RPP) basado en el algoritmo
@@ -21,13 +28,25 @@ import java.lang.StringBuilder
 public class HeuristicaRPP {
     companion object {
         
-        /* --------- ALGORITMO --------- */
-        
+        /* ---------------- ALGORITMO ---------------- */
+
         private val mapa = HashMap<Int, Int>()
         private var mapaInverso = IntArray(0)
         private val numVR: Int
             get() = mapa.size
-
+        
+        /**
+         * Ejecuta el algoritmo propuesto por Christofides et al. para
+         * hallar una solución al problema RPP.
+         * 
+         * Tiempo de ejecución: O(?).
+         * Precondición:  [g] es un grafo no dirigido.
+         *                [R] es un conjunto de aristas requeridos de [g].
+         *                [usarVertexScan] es un booleano que indica si se 
+         *                emplea el apareamiento perfecto Vertex Scan o Ávido.
+         * Postcondición: [ejecutarAlgoritmo] es un iterable de Aristas que 
+         *                que representa el camino solución del problema RPP.
+         */
         private fun ejecutarAlgoritmo(
             g: GrafoNoDirigido,
             R: MutableSet<Arista>,
@@ -192,6 +211,99 @@ public class HeuristicaRPP {
             return CicloEulerianoGrafoNoDirigido(gP).obtenerCicloEuleriano()
         }
 
+        /**
+         * Retorna un entero que corresponde al mapeo de un vértice del
+         * grafo G a un vértice válido del grafo GR.
+         * 
+         * Tiempo de ejecución: O(1).
+         * Precondición:  [v] es un entero no negativo.
+         * Postcondición: [f] es un entero no negativo.
+         */
+        private fun f(v: Int): Int = mapa[v]!!
+
+        /**
+         * Retorna un entero que corresponde al mapeo de un vértice del
+         * grafo GR a un vértice válido del grafo G.
+         * 
+         * Tiempo de ejecución: O(1).
+         * Precondición:  [v] es un entero no negativo.
+         * Postcondición: [f] es un entero no negativo.
+         */
+        private fun fInversa(v: Int): Int = mapaInverso[v]
+
+        /**
+         * Retorna un booleano que indica si un grafo no dirigido [g] es par.
+         * 
+         * Tiempo de ejecución: O(1).
+         * Precondición:  [g] es un grafo no dirigido.
+         * Postcondición: [esPar] es -True si todos los vértices de [g]
+         *                                 tienen grado par
+         *                           -False de otra forma.
+         */        
+        private fun esPar(g: GrafoNoDirigido): Boolean {
+            val n = g.obtenerNumeroDeVertices()
+            val paridad = BooleanArray(n) { true }
+
+            g.aristas().forEach {
+                val u = it.cualquieraDeLosVertices()
+                val v = it.elOtroVertice(u)
+                
+                paridad[u] = !paridad[u]
+                paridad[v] = !paridad[v]
+            }
+
+            return paridad.all { it }
+        }
+
+        /**
+         * Retorna una matriz de costos mínimos entre todos los vértices
+         * del grafo no dirigido [g] y un arreglo con cada instancia del 
+         * algoritmo de Dijkstra para grafos no dirigidos utilizado para calcular.
+         * 
+         * Tiempo de ejecución: O(|V|*|E|log(|V|)).
+         * Precondición:  [g] es un grafo no dirigido.
+         * Postcondición: [calcularCostosMinimos] es un par que contiene
+         *                  - Arreglo de arreglos de doubles que representa el 
+         *                    costo mínimo entre cada par de vértices de [g].
+         *                  - Arreglo con instancias de la clase 
+         *                    DijkstraGrafoNoDirigido desde cada vértice de [g].
+         */ 
+        private fun calcularCostosMinimos(g: GrafoNoDirigido):
+            Pair<Array<DoubleArray>, Array<DijkstraGrafoNoDirigido>> {
+                
+            val n = g.obtenerNumeroDeVertices()
+            val W = Array<DoubleArray>(n) { DoubleArray(n) }
+            val dijks = Array<DijkstraGrafoNoDirigido?>(n) { null }
+            
+            for (i in 0 until n) {
+                val dij = DijkstraGrafoNoDirigido(g, i)
+                dijks[i] = dij
+
+                for (j in i + 1 until n) {
+                    W[i][j] = dij.costoHasta(j)
+                    W[j][i] = dij.costoHasta(j)
+                }
+            }
+
+            return Pair(W, dijks.filterNotNull().toTypedArray())
+        }
+
+        /**
+         * Encuentra el camino de costo mínimo entre los vértices de una componente
+         * conexa [comp1] y los vértices de otra componente conexa [comp2].
+         * 
+         * Tiempo de ejecución: O(|V|) con |V| siendo el tamaño de una fila de [mat] ???.
+         * Precondición:  [mat] es una matriz de costos mínimos de un grafo.
+         *                [comp1] es una componente conexa.
+         *                [comp2] es una componente conexa.
+         * Postcondición: [costoMinComponente] es un triple que contiene:
+         *                - Un entero que representa el vértice fuente del camino 
+         *                  de costo mínimo entre las componentes [comp1] y [comp2].
+         *                - Un entero que representa el vértice sumidero del camino 
+         *                  de costo mínimo entre las componentes [comp1] y [comp2].
+         *                - Un double que representa el costo mínimo entre las 
+         *                  componentes [comp1] y [comp2].
+         */
         private fun costoMinComponente(
             mat: Array<DoubleArray>, 
             comp1: ArrayList<Int>, 
@@ -217,56 +329,42 @@ public class HeuristicaRPP {
             return Triple(i, j, costoMin)
         }
 
-        /**
-         * Mapea  G -> GR
-         */
-        private fun f(v: Int): Int = mapa[v]!!
+        /* ---------------- EJECUCIÓN DEL CLIENTE ---------------- */
 
         /**
-         * Mapea  GR -> G
-         */
-        private fun fInversa(v: Int): Int = mapaInverso[v]
-
-        private fun esPar(g: GrafoNoDirigido): Boolean {
-            val n = g.obtenerNumeroDeVertices()
-            val paridad = BooleanArray(n) { true }
-
-            g.aristas().forEach {
-                val u = it.cualquieraDeLosVertices()
-                val v = it.elOtroVertice(u)
-                
-                paridad[u] = !paridad[u]
-                paridad[v] = !paridad[v]
-            }
-
-            return paridad.all { it }
-        }
-
-        private fun calcularCostosMinimos(g: GrafoNoDirigido):
-            Pair<Array<DoubleArray>, Array<DijkstraGrafoNoDirigido>> {
-                
-            val n = g.obtenerNumeroDeVertices()
-            val W = Array<DoubleArray>(n) { DoubleArray(n) }
-            val dijks = Array<DijkstraGrafoNoDirigido?>(n) { null }
-            
-            for (i in 0 until n) {
-                val dij = DijkstraGrafoNoDirigido(g, i)
-                dijks[i] = dij
-
-                for (j in i + 1 until n) {
-                    W[i][j] = dij.costoHasta(j)
-                    W[j][i] = dij.costoHasta(j)
-                }
-            }
-
-            return Pair(W, dijks.filterNotNull().toTypedArray())
-        }
-
-        /* -------- EJECUCIÓN DEL CLIENTE -------- */
+         * Retorna un entero que representa el porcentaje de desviación 
+         * dado una solución obtenida y la solución óptima.
+         * 
+         * Tiempo de ejecución: O(1).
+         * Precondición:  [valorObt] es un entero.
+         *                [valorOpt] es un entero
+         * Postcondición: [desv] es un entero que representa la desviación.
+         */ 
         private fun desv(valorObt: Int, valorOpt: Int): Double {
             return (valorObt - valorOpt) * 100 / valorOpt.toDouble()
         }
 
+        /**
+         * Construye un grafo no dirigido al cual se quiere solucionar el problema RPP,
+         * a partir del archivo en la ruta [nombreArchivo].
+         * 
+         * El formato del archivo es el siguiente:
+         *  -La primera línea contiene el nombre de la instancia.
+         *  -La segunda línea contiene el número de componentes de la instancia.
+         *  -La tercera línea contiene el número de vértices del grafo.
+         *  -La cuarta línea contiene el número de aristas requeridas.
+         *  -La quinta línea contieen el número de aristas no requeridas.
+         *  -Las siguientes líneas contienen los vértices del grafo con el formato:
+         *      (-vértice inicial-, -vértice final-)   coste      -entero-       -entero-.
+         * 
+         * Tiempo de ejecución: O(?).
+         * Precondición:  [nombreArchivo] es un String que representa la dirección 
+         *                de un archivo con los datos de un grafo no dirigido al que se 
+         *                quiere solucionar el problema RPP.
+         * Postcondición: [extraerDatos] es un par que contiene:
+         *                - Un grafo no dirigido construido con los datos de [nombreArchivo]
+         *                - Un conjunto de Aristas construido con los datos de [nombreArchivo]              
+         */ 
         private fun extraerDatos(nombreArchivo: String): 
             Pair<GrafoNoDirigido, MutableSet<Arista>> {
             // Verifica si el archivo existe
@@ -353,6 +451,9 @@ public class HeuristicaRPP {
             return Pair(g, R)
         }
 
+        /**
+         * Programa cliente.            
+         */ 
         @JvmStatic fun main(args: Array<String>) {
             // Verifica argumentos
             if (args.size != 2 || (args[0] != "a" && args[0] != "v")) {

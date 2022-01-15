@@ -3,7 +3,6 @@
 ./runHeurRPP.sh a Instancias_RPP/URPP/UR762
 ./runHeurRPP.sh a Instancias_RPP/URPP/UR742
 ./runHeurRPP.sh a Instancias_RPP/URPP/UR767
-./runHeurRPP.sh a Instancias_RPP/URPP/PALMA
 ./runHeurRPP.sh a Instancias_RPP/URPP/UR765
 ./runHeurRPP.sh a Instancias_RPP/URPP/UR152
 ./runHeurRPP.sh a Instancias_RPP/URPP/UR565
