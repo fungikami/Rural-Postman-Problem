@@ -146,7 +146,7 @@ public class HeuristicaRPP {
                 }
             }
 
-            return Arista(i, j, costo)
+            return Arista(i, j, min)
         }
 
         private fun f(v: Int): Int = mapa[v]!!
