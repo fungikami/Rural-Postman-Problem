@@ -44,12 +44,13 @@ public class HeuristicaRPP {
 
             // Verifica si G' es conexo y par
             val cc = ComponentesConexasDFSIter(gP)
-            val esConexo = cc.numeroDeComponentesConexas() == 1
+            val numCC = cc.numeroDeComponentesConexas()
+            val esConexo = numCC == 1
             
             // Obtiene la matriz de costos de caminos de costo mínimo
-            val cm = calcularMatrizCostoMinimo(g)
+            val CCM = calcularMatrizCostoMinimo(g)
             println("Matriz de costos:")
-            cm.forEach { println(it.joinToString(", ")) }
+            CCM.forEach { println(it.joinToString(", ")) }
 
             /*
                 0  3   6  3   7  9  5         
@@ -64,12 +65,21 @@ public class HeuristicaRPP {
             // Si G' no es conexo (sin importar si es o no par)
             if (!esConexo) {
                 // Líneas 9 a 15
-                // Conjunto de componentes conexas de G'
-                // val compConexas = 
-
                 // Construye grafo G_t de componentes conexas de G'
                 // (El peso de cada arista es el del camino de costo minimo de (vi, vj))
-                // 
+                val gT = GrafoNoDirigido(numCC)
+
+                // Crea un arreglo con los vertices de cada componente conexa
+                val vertCC = Array(numCC) { ArrayList<Int>() }
+                for (v in 0 until n) vertCC[cc.obtenerComponente(v)].add(v)
+
+                // Por cada par de componentes conexas, hallar costo mínimo
+                for (u in 0 until numCC) {
+                    for (v in u+1 until numCC) {
+                        val costo = costoMinComponente(CCM, vertCC[u], vertCC[v])
+                        gT.agregarArista(Arista(u, v, costo))
+                    }
+                }
 
                 // Obtiene el árbol mínimo cobertor
 
@@ -114,6 +124,22 @@ public class HeuristicaRPP {
             // OJOOOO, DEVOLVER QUE LOS VERTICES COMIENCEN DESDE 1 Y NO DESDE 0
             // ***************************************************************
             return CicloEulerianoGrafoNoDirigido(gP).obtenerCicloEuleriano()
+        }
+
+        private fun costoMinComponente(
+            costos: Array<DoubleArray>, 
+            comp1: ArrayList<Int>, 
+            comp2: ArrayList<Int>
+        ): Double {
+            var min = POSITIVE_INFINITY
+            comp1.forEach { u ->
+                comp2.forEach { v ->
+                    val costo = costos[u][v]
+                    if (costo < min) min = costo
+                }
+            }
+
+            return min
         }
 
         private fun f(v: Int): Int = mapa[v]!!
