@@ -6,6 +6,7 @@
 \usepackage[utf8]{inputenc} 
 \usepackage{amsmath}
 \usepackage{amssymb} 
+\usepackage{amsbsy} % librerias ams
 \usepackage{graphicx}           % Incluir imágenes en LaTeX
 \usepackage{color}              % Para colorear texto
 \usepackage{subfigure}          % subfiguras
@@ -29,7 +30,7 @@
 \fancyhf{}
 \fancyhead[L]{\footnotesize USB}                           % Encabezado izquierda
 \fancyhead[R]{\footnotesize Algoritmo Heurístico RPP}      % Encabezado derecha
-\fancyfoot[R]{\footnotesize Informe}                       % Pie derecha
+\fancyfoot[R]{\footnotesize Informe Proyecto II}                       % Pie derecha
 \fancyfoot[C]{\thepage}                                    % Centro
 \fancyfoot[L]{\footnotesize Ingeniería de la Computación}  % Izquierda
 \renewcommand{\footrulewidth}{0.4pt}
@@ -46,23 +47,19 @@
 
    \begin{minipage}{0.48\textwidth}
       \begin{center}
-         \includegraphics[scale = 0.5]{logo.png}
+         \includegraphics[scale = 0.8]{logotip.png}
       \end{center}
    \end{minipage}
 
-   \vspace*{1.0cm}                       
-   \textsc{\huge Universidad Simón Bolívar} \\ [1.5cm] 
-
-   \begin{minipage}{0.9\textwidth} 
-      \begin{center}                                                             
-         \textsc{\LARGE Informe de Proyecto II }
-      \end{center}
-   \end{minipage} \\ [3cm]
+   \vspace*{0.2cm}                       
+   \textsc{\large Dpto. de Computación y Tecnología de la Información} \\ 
+   \textsc{\large CI-2693 - Lab. de Algoritmos y Estructuras de Datos III} \\ [4cm] 
 
    \vspace*{1cm}                                                                              
-   \HRule \\ [0.4cm]                                                  
-   {\huge \bfseries Un algoritmo heurístico para resolver el Problema del Cartero Rural} \\ [0.4cm] 
-   \HRule \\ [4cm]
+   \HRule \\ [0.4cm]     
+   \textsc{\Large Proyecto II } \\ [0.4cm]                                       
+   {\Huge \bfseries Un algoritmo heurístico para resolver el Problema del Cartero Rural} \\ [0.4cm] 
+   \HRule \\ [6cm]
 
    \begin{minipage}{\textwidth} 
       \begin{flushleft} \large    
@@ -73,16 +70,12 @@
    \end{minipage}
 
    \begin{minipage}{\textwidth}    
-      \vspace{-0.6cm}  
+      \vspace{-2cm}  
       \begin{flushright} \large    
          \textbf{\underline{Profesor:}} \\  
          Guillermo Palma  
       \end{flushright}        
-   \end{minipage} 
-
-   \vspace*{1cm}
-   \flushleft{\textbf{\Large Algoritmos y Estructuras III (CI2693)} }\\
-   \vspace{2cm}  
+   \end{minipage} \\ [2cm]
 
    \begin{center} 
       {\large \today} 
@@ -94,13 +87,50 @@
 % -------------------------------------------
 \section{Introducción}
 
-El siguiente estudio experimental consiste en ejecutar un algoritmo heurístico para
-obtener soluciones aproximadas al Problema del Cartero Rural, modelado mediante el uso de
-grafos no dirigidos. Para ello, se implentará el algoritmo presentado por Pearn y Wu, el
-cual es una modificación del algoritmo de Christofides et al. \\
+El siguiente estudio experimental consiste en implementar un algoritmo heurístico para
+obtener soluciones aproximadas al Problema del Cartero Rural (RPP), modelado mediante el uso 
+de grafos no dirigidos. Para ello, se empleará el algoritmo presentado por Pearn y Wu, el
+cual es una modificación del algoritmo de Christofides et al. El RPP consiste en encontrar 
+un ciclo de costo mínimo en un grafo no dirigido, tal que atraviese un conjunto de lados 
+requeridos al menos una vez. \\
 
-Se compararán dos algoritmos para la obtención de apareamientos perfectos. \\
+En el algoritmo de Pearn y Wu requiere de la implementación de un algoritmo de apareamiento 
+perfecto de costo mínimo. Por ello, se implementará dos algoritmos heurísticos para obtener 
+un apareamiento perfecto de un grafo completo (Ávido y Vertex-Scan), que proporcionan una 
+solución aproximada. Asimismo, se realizará una comparación de efectividad entre ambos 
+algoritmos para distintas instancias del problema RPP. \\
 
+\section{Diseño de la solución}
+
+Construcción de grafo GR y G' (mapeo G -> GR)\\
+
+Construcción del grafo G0 (mapeo GR -> G0) \\
+
+Implementación del algoritmo de Dijkstra para grafos no dirigidos\\
+
+Implementación del ciclo euleriano para grafos no dirigidos\\
+
+
+
+
+\section{Detalles de la implementacion}
+
+Algoritmo para obtener las componentes conexas en grafos no dirigidos. \\
+
+Algoritmo de Dijkstra para obtener los caminos de costo mínimo en grafos no dirigidos. \\
+
+Algoritmo de Prim para obtener el árbol mínimo cobertor.\\
+
+Algoritmo para obtener el ciclo euleriano de grafos no dirigidos.\\
+
+Algoritmo de apareamiento perfecto ávido.\\
+
+Algoritmo de apareamiento perfecto Vertex-Scan.\\
+
+Programa cliente para la solución del problema RPP.\\
+
+
+\section{Detalles de la plataforma}
 Los siguientes son los detalles de la máquina y el entorno donde se ejecutaron los algoritmos:
 
 \begin{itemize}
@@ -112,21 +142,14 @@ Los siguientes son los detalles de la máquina y el entorno donde se ejecutaron 
    % \item \textbf{Flags (máquina virtual)}: -Xmx2g.
 \end{itemize}
 
-\section{Diseño de la solución}
-
-hola. \\
-
-
-\section{Detalles de la implementacion}
-
-chau. \\
-
-
-\section{Datos de la plataforma}
-
-hola. \\
-
 \section{Resultados experimentales}
+
+Para realizar una comparación entre la solución obtenida y la solución óptima de una instancias
+del problema de RPP, se calculó el porcentaje de desviación con la fórmula:
+
+\begin{equation}
+    \%desv = \cfrac{\text{valor obtenido} - \text{valor óptimo}}{\text{valor óptimo}} *100
+\end{equation}
 
 hola otra vez, aquí van dos tablas. \\
 
