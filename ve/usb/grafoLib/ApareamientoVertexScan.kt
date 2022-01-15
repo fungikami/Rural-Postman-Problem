@@ -57,18 +57,22 @@ public class ApareamientoVertexScan(g: GrafoNoDirigido) {
             }
         }
         
+        println("VP Inicial (tamaño): ${vP.size}")
         while (!vP.isEmpty()) {
+            println("VP (tamaño): ${vP.size}")
             // Escoge aleatoriamente un vértice i de vP
             val i = vP.random()
 
             // Escoge el lado (i, j) con con menor costo
-            val lado = eP[indV[i]]
-            val j = lado.elOtroVertice(i)            
+            val lado: Arista
+            var j = i
+            while (!vP.remove(eP[indV[j]].elOtroVertice(i))) j++
+            lado = eP[indV[j]] 
+
             M.add(lado)
             
             // Elimina los vértices i, j de vP
             vP.remove(i)
-            vP.remove(j)
         }
     }
      

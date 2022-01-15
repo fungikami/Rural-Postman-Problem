@@ -89,11 +89,14 @@ public class DijkstraGrafoNoDirigido(val g: GrafoNoDirigido, val s: Int) {
         // Se usa una pila para guardar la secuencia de arcos a retornar
         val S = LinkedList<Arista>()
         var u = pred[v]
+        var w = v
 
         if (existeUnCamino(v)) {
             while (u != null) {
                 S.addFirst(u)
-                u = pred[u.cualquieraDeLosVertices()]
+                val s = u.elOtroVertice(w)
+                u = pred[s]
+                w = s
             }
         }
 

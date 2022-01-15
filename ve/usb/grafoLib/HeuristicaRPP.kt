@@ -21,7 +21,7 @@ import java.lang.StringBuilder
 public class HeuristicaRPP {
     companion object {
         
-        // --------- ALGORITMO ---------
+        /* --------- ALGORITMO --------- */
         
         private val mapa = HashMap<Int, Int>()
         private var mapaInverso = IntArray(0)
@@ -84,10 +84,9 @@ public class HeuristicaRPP {
                     val u = it.cualquieraDeLosVertices()
                     val v = it.elOtroVertice(u)
                     
-                    val (s, t) = mapaEt0[Pair(u, v)]!!
-                    dijks[s].obtenerCaminoDeCostoMinimo(t).forEach { lado ->
-                        Et.add(lado)
-                    }
+                    val (s, t) = mapaEt0[Pair(u, v)]?: mapaEt0[Pair(v, u)]!!
+
+                    dijks[s].obtenerCaminoDeCostoMinimo(t).forEach { lado -> Et.add(lado) }
                 }
 
                 // Agrega a G' vértices en E_t que no se encuentren VR
@@ -153,6 +152,8 @@ public class HeuristicaRPP {
                  } else {
                     ApareamientoPerfectoAvido(g0).obtenerApareamiento()
                 }
+
+                println("Apareamiento:${M.count()}")
     
                 val ladosAgregar = mutableListOf<Arista>()
                 mapaLista = mapaInverso.toMutableList()
@@ -190,11 +191,6 @@ public class HeuristicaRPP {
                 ladosAgregar.forEach { gP.agregarArista(it) }
             }
 
-            println("gP:\n$gP")
-
-            // ***************************************************************
-            // OJOOOO, DEVOLVER QUE LOS VERTICES COMIENCEN DESDE 1 Y NO DESDE 0
-            // ***************************************************************
             return CicloEulerianoGrafoNoDirigido(gP).obtenerCicloEuleriano()
         }
 
@@ -268,9 +264,9 @@ public class HeuristicaRPP {
             return Pair(W, dijks.filterNotNull().toTypedArray())
         }
 
-        // -------- EJECUCIÓN DEL CLIENTE -------- 
-        private fun desv(valorObt: Int, valorOpt: Int): Int {
-            return (valorObt - valorOpt) * 100 / valorOpt
+        /* -------- EJECUCIÓN DEL CLIENTE -------- */
+        private fun desv(valorObt: Int, valorOpt: Int): Double {
+            return (valorObt - valorOpt) * 100 / valorOpt.toDouble()
         }
 
         private fun extraerDatos(nombreArchivo: String): 
@@ -370,15 +366,6 @@ public class HeuristicaRPP {
             val vertexScan = args[0] == "v"
             val (g, R) = extraerDatos(args[1])
 
-            println("Vertices del grafo: ${g.obtenerNumeroDeVertices()}")
-
-            val mapaCorrecto = (
-                (mapaInverso.size == mapa.size) &&
-                (0 until mapa.size).all { f(fInversa(it)) == it }  &&
-                mapaInverso.all { fInversa(f(it)) == it }
-            )
-            println("Mapa construido correctamente: $mapaCorrecto")
-
             // Ejecuta el algoritmo RPP
             var ciclo: Iterable<Arista>
             val ms = measureTimeMillis { 
@@ -389,8 +376,15 @@ public class HeuristicaRPP {
             ciclo.forEach { print("${it.cualquieraDeLosVertices() + 1} ") }
             val u = ciclo.last().cualquieraDeLosVertices()
             println(ciclo.last().elOtroVertice(u) + 1)
-            println(ciclo.sumOf { it.peso() }.toInt())
+            
+            val costoTotal = ciclo.sumOf { it.peso() }.toInt()
+            println(costoTotal)
             println("%.3f segs.".format(ms / 1000.0))
+
+            val stdev = desv(costoTotal, 17830)
+
+            println(stdev)
+            println(stdev/100 + 1)
         }
     }
 }
