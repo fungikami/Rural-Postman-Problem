@@ -74,15 +74,17 @@ public class HeuristicaRPP {
                 for (v in 0 until n) vertCC[cc.obtenerComponente(v)].add(v)
 
                 // Por cada par de componentes conexas, hallar costo mínimo
+                val eT0 = ArrayList<Arista>()
                 for (u in 0 until numCC) {
                     for (v in u+1 until numCC) {
-                        val costo = costoMinComponente(CCM, vertCC[u], vertCC[v])
-                        gT.agregarArista(Arista(u, v, costo))
+                        val a = costoMinComponente(CCM, vertCC[u], vertCC[v])
+                        gT.agregarArista(Arista(u, v, a.peso()))
+                        eT0.add(a)
                     }
                 }
 
-                // Obtiene el árbol mínimo cobertor
-
+                // Obtiene los lados del árbol mínimo cobertor
+                val eMST = ArbolMinimoCobertorPrim(gT).obtenerLados()
 
                 // Elimina los lados duplicados de E_t0
 
@@ -127,19 +129,24 @@ public class HeuristicaRPP {
         }
 
         private fun costoMinComponente(
-            costos: Array<DoubleArray>, 
+            spl: Array<DoubleArray>, 
             comp1: ArrayList<Int>, 
             comp2: ArrayList<Int>
-        ): Double {
-            var min = POSITIVE_INFINITY
+        ): Arista {
+            var (i, j, min) = Triple(-1, -1, POSITIVE_INFINITY)
+
             comp1.forEach { u ->
                 comp2.forEach { v ->
-                    val costo = costos[u][v]
-                    if (costo < min) min = costo
+                    val costo = spl[u][v]
+                    if (costo < min) {
+                        i = u
+                        j = v
+                        min = costo
+                    }
                 }
             }
 
-            return min
+            return Arista(i, j, costo)
         }
 
         private fun f(v: Int): Int = mapa[v]!!
