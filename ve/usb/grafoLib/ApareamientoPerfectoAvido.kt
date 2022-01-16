@@ -63,7 +63,7 @@ public class ApareamientoPerfectoAvido(g: GrafoNoDirigido) {
     /** 
      * Verifica si un grafo no dirigido es completo.
      * 
-     * Tiempo de ejecución: O(|E|).
+     * Tiempo de ejecución: O(|V²|).
      * Precondición: true.
      * Postcondición: [esCompleto] es -True si [g] es completo.
      *                                -False de otra forma. 
