@@ -13,17 +13,11 @@ import java.io.FileInputStream
 import java.util.Scanner
 import java.lang.StringBuilder
 
-// *******************************************************
-// esPar puede utilizar g.grado() ?
-// ay compadre, seguro que el peso es entero siempre no?
-//
-//
-// *******************************************************
-
 /**
  * Implementación del algoritmo heurístico para resolver el
  * Problema del Cartero Rural (RPP) basado en el algoritmo
- * propuesto por Christofides et al.
+ * propuesto por Christofides et al. y modificado por Pearn 
+ * y Wu.
  */
 public class HeuristicaRPP {
     companion object {
@@ -36,19 +30,18 @@ public class HeuristicaRPP {
             get() = mapa.size
         
         /**
-         * Ejecuta el algoritmo propuesto por Christofides et al. y
-         * modificado por Pearn y Wu para hallar una solución al problema
-         * RPP.
+         * Ejecuta el algoritmo propuesto por Christofides et al. y modificado
+         * por Pearn y Wu para hallar una solución al problema RPP.
          * 
          * Tiempo de ejecución: O(?).
          * Precondición:  [g] es un grafo no dirigido.
-         *                [R] es un conjunto de aristas requeridos de [g].
+         *                [R] es un conjunto de aristas requeridas del RPP.
          *                [usarVertexScan] es un booleano que indica si se 
          *                emplea el apareamiento perfecto Vertex Scan o Ávido.
-         * Postcondición: [ejecutarAlgoritmo] es un iterable de Aristas que 
+         * Postcondición: [algoritmoHeuristicoRPP] es un iterable de Aristas que 
          *                que representa el camino solución del problema RPP.
          */
-        private fun ejecutarAlgoritmo(
+        private fun algoritmoHeuristicoRPP(
             g: GrafoNoDirigido,
             R: MutableSet<Arista>,
             usarVertexScan: Boolean
@@ -56,9 +49,7 @@ public class HeuristicaRPP {
             // Crea grafo GR = <VR, R> (VR son los vértices de R)
             var gP = crearGRInicial(R)
 
-            // println(gP)
-
-            // Verifica si G' es conexo y par
+            // Verifica si G' = GR es conexo y par
             val cc = ComponentesConexasDFSIter(gP)
             val numCC = cc.numeroDeComponentesConexas()
             val esConexo = numCC == 1
@@ -71,21 +62,13 @@ public class HeuristicaRPP {
 
             // Si G' no es conexo (sin importar si es o no par)
             if (!esConexo) {
-                // Líneas 9 a 15
-                /* Construye grafo G_t de componentes conexas de G'
-                (El peso de cada arista es el del camino de costo minimo de (vi, vj)) */
-                val gT = GrafoNoDirigido(numCC)
-
-                // componente[i] = lista de vértices que pertenecen a la i-ésima CC
-                val componente = Array(numCC) { mutableListOf<Int>() }
-                for (v in 0 until numVR) componente[cc.obtenerComponente(v)].add(v)
-
                 // Por cada par de componentes conexas, hallar costo mínimo
                 val ccmEntreComponentes = HashMap<Pair<Int, Int>, Pair<Int, Int>>()
 
-                /* Función que recibe dos componentes del grafo componente GCC 
-                y devuelve el camino de costo mínimo entre ambas componentes
-                en el grafo G */
+                /** 
+                 * Función que retorna el camino de costo mínimo en el grafo G
+                 * entre las componentes conexas [u] y [v] de GCC.
+                 */
                 val caminoEntreComponentes: (Int, Int) -> Iterable<Arista> = {
                     u: Int, v: Int -> 
                     val (s, t) = ccmEntreComponentes[Pair(u, v)]
@@ -93,50 +76,34 @@ public class HeuristicaRPP {
                     dijks[s].obtenerCaminoDeCostoMinimo(t)
                 }
                 
-                for (u in 0 until numCC) {
-                    for (v in u+1 until numCC) {
-                        val (s, t, costo) = c_et(spl, componente[u], componente[v])
-                        val lado = Arista(u, v, costo)
-                        gT.agregarArista(lado)
-                        
-                        ccmEntreComponentes[Pair(u, v)] = Pair(s, t)
-                    }
-                }
+                // Construye grafo G_t de componentes conexas de G'
+                val gT = crearGt(cc, ccmEntreComponentes, spl)
 
                 // Obtiene los lados del árbol mínimo cobertor y los lados asociados a CCM
                 val eMST = ArbolMinimoCobertorPrim(gT).obtenerLados()
 
-                val Et = mutableSetOf<Arista>()
+                val eT = mutableSetOf<Arista>()
                 eMST.forEach {
                     val u = it.cualquieraDeLosVertices()
                     val v = it.elOtroVertice(u)
                     
-                    caminoEntreComponentes(u, v).forEach { lado -> Et.add(lado) }
+                    caminoEntreComponentes(u, v).forEach { lado -> eT.add(lado) }
                 }
 
                 // Agrega a G' vértices en E_t que no se encuentren VR
-                Et.forEach {
-                    val u = it.cualquieraDeLosVertices()
-                    val v = it.elOtroVertice(u)
-                    
-                    agregarAVR(u)
-                    agregarAVR(v)
-                }
+                eT.forEach { agregarAVR(it) }
 
                 // Agrega a G' los lados E_t, se permite lados duplicados
-                val temp = gP
-                gP = GrafoNoDirigido(numVR)
-                temp.aristas().forEach { gP.agregarArista(it) }
-                Et.forEach { gP.agregarArista(mapearAristaV_A_VR(it)) }
-
+                gP = aumentarGP(gP)
+                eT.forEach { gP.agregarArista(mapearAristaV_A_VR(it)) }
             }
 
             if (!esConexo || !esPar(gP)) {
-                // Determina el conjunto de vértices V_0
-
-                /* Crea un mapa de GR = <VR, R> -> G0 = <V0, E0>
-                Solo se crea el mapeo inverso mediante la función h^-1
-                de G0 = <V0, E0> -> GR = <VR, R> porque el otro no se usa. */
+                /**
+                 * Crea un mapa de GR = <VR, R> -> G0 = <V0, E0>
+                 * Solo se crea el mapeo inverso mediante la función h^-1 de 
+                 * G0 = <V0, E0> -> GR = <VR, R> porque la función h no se usa. 
+                 */
                 val mapaInversoV0 = mutableListOf<Int>()
                 val hInv = { v: Int -> mapaInversoV0[v] }
 
@@ -144,7 +111,7 @@ public class HeuristicaRPP {
                     if (gP.grado(u) % 2 == 1) mapaInversoV0.add(u)
                 }
 
-                // Construye grafo G_0
+                // Construye grafo G0 = <V0, E0> con costos del CCM de G
                 val numV0 = mapaInversoV0.size
                 val g0 = GrafoNoDirigido(numV0)
                 for (u in 0 until numV0) {
@@ -157,38 +124,31 @@ public class HeuristicaRPP {
                     }
                 }
 
-                // Determina apareamiento perfecto M
+                // Determina apareamiento perfecto M al grafo G0
                 val M = if (usarVertexScan) {
                     ApareamientoVertexScan(g0).obtenerApareamiento()
                  } else {
                     ApareamientoPerfectoAvido(g0).obtenerApareamiento()
                 }
-    
-                val ladosAgregar = mutableListOf<Arista>()
 
+                // Determina los nuevos lados a agregar en G'
+                val ladosAgregar = mutableListOf<Arista>()
                 M.forEach {
                     // Obtiene el CCM
                     val u = it.cualquieraDeLosVertices()
                     val v = it.elOtroVertice(u)
                     
-                    // G_0 -> G_R -> G
-                    val (s, t) = Pair(fInv(mapaInversoV0[u]), fInv(mapaInversoV0[v]))
+                    // G0 -> G' -> G
+                    val (s, t) = Pair(fInv(hInv(u)), fInv(hInv(v)))
 
                     dijks[s].obtenerCaminoDeCostoMinimo(t).forEach {
-                        val i = it.cualquieraDeLosVertices()
-                        val j = it.elOtroVertice(i)
-                        
-                        agregarAVR(i)
-                        agregarAVR(j)
-
-                        ladosAgregar.add(Arista(f(i), f(j), it.peso()))
+                        agregarAVR(it)
+                        ladosAgregar.add(mapearAristaV_A_VR(it))
                     }
                 }
 
                 // Agrega a G' los lados de los CCM, se permite lados duplicados
-                val temp = gP
-                gP = GrafoNoDirigido(numVR)
-                temp.aristas().forEach { gP.agregarArista(it) }
+                gP = aumentarGP(gP)
                 ladosAgregar.forEach { gP.agregarArista(it) }
             }
 
@@ -211,27 +171,110 @@ public class HeuristicaRPP {
          * 
          * Tiempo de ejecución: O(1).
          * Precondición:  [v] es un entero no negativo.
-         * Postcondición: [f] es un entero no negativo.
+         * Postcondición: [fInv] es un entero no negativo.
          */
         private fun fInv(v: Int): Int = mapaInverso[v]
 
-        private fun agregarAVR(v: Int) {
-            if (!mapa.containsKey(v)) {
-                mapa[v] = numVR
-                mapaInverso.add(v)
+        /**
+         * Agrega, de no existir, los vértices de una Arista [a] 
+         * al conjunto de vértices VR.
+         * 
+         * Tiempo de ejecución: O(1).
+         * Precondición:  [a] es una Arista de GR.
+         * Postcondición: VR = VR0 U {u, v}.
+         */
+        private fun agregarAVR(a: Arista) {
+            val u = a.cualquieraDeLosVertices()
+            val v = a.elOtroVertice(u)
+            
+            intArrayOf(u, v).forEach {
+                if (!mapa.containsKey(it)) {
+                    mapa[it] = numVR
+                    mapaInverso.add(it)
+                }
             }
         }
 
+        /**
+         * Retorna el mapeo de una arista de G = <V, E> a GR = <VR, R>.
+         * 
+         * Tiempo de ejecución: O(1).
+         * Precondición:  [a] es una Arista del grafo G.
+         * Postcondición: [mapearAristaV_A_VR] es una Arista del grafo GR.
+         */
         private fun mapearAristaV_A_VR(a: Arista): Arista {
             val u = a.cualquieraDeLosVertices()
             val v = a.elOtroVertice(u)
             return Arista(f(u), f(v), a.peso())
         }
 
+        /**
+         * Retorna un grafo no dirigido donde los vértices corresponden
+         * a los vértices de [R] mapeados.
+         * 
+         * Tiempo de ejecución: O(|VR| + |R|).
+         * Precondición:  [R] es un conjunto de Aristas a agregar al grafo.
+         * Postcondición: [crearGRInicial] es el grafo GR = <VR, R>.
+         */
         private fun crearGRInicial(R: MutableSet<Arista>): GrafoNoDirigido {
             val gR = GrafoNoDirigido(numVR)
             R.forEach { gR.agregarArista(mapearAristaV_A_VR(it)) }
             return gR
+        }
+
+        /**
+         * Aumenta el tamaño del grafo no dirigido [gP] = <VR0, ER0>
+         * según el tamaño actual de VR.
+         * 
+         * Tiempo de ejecución: O(|VR| + |ER0|).
+         * Precondición:  [gP] es un grafo no dirigido.
+         * Postcondición: gP = <VR, ER0>
+         */
+        private fun aumentarGP(gP: GrafoNoDirigido): GrafoNoDirigido {
+            val gPNuevo = GrafoNoDirigido(numVR)
+            gP.aristas().forEach { gPNuevo.agregarArista(it) }
+            return gPNuevo
+        }
+
+        /**
+         * Retorna un grafo no dirigido completo donde cada vértice corresponde
+         * a una componente conexa de [cc] y el peso de cada lado corresponde al
+         * mínimo valor de [spl] entre los vértices de las componentes conexas.
+         * 
+         * Construye un [mapaCCM] como se indica en la postcondición.
+         * 
+         * Tiempo de ejecución: O(|VT|⁴).
+         * Precondición:  [cc] es una instancia de ComponentesConexasDFSIter 
+         *                     correspondiente a GCC.
+         *                [mapaCCM] es un HashMap que mapea pares a pares (de enteros).
+         *                [spl] es una función que retorna el costo del CCM entre dos vértices.
+         * Postcondición: [crearGt] es un grafo no dirigido completo Gt.
+         *                [mapaCCM] contiene el mapeo de un lado de [crearGt] a los vértices 
+         *                          iniciales y finales del CCM correspondiente al grafo G.
+         */
+        private fun crearGt(
+            cc: ComponentesConexasDFSIter,
+            mapaCCM: HashMap<Pair<Int, Int>, Pair<Int, Int>>,
+            spl: (Int, Int) -> Double
+        ): GrafoNoDirigido {
+            val numCC = cc.numeroDeComponentesConexas()
+            val gT = GrafoNoDirigido(numCC)
+
+            // componente[i] = lista de vértices que pertenecen a la i-ésima CC de G'
+            val componente = Array(numCC) { mutableListOf<Int>() }
+            for (v in 0 until numVR) componente[cc.obtenerComponente(v)].add(v)
+            
+            for (u in 0 until numCC) {
+                for (v in u+1 until numCC) {
+                    val (s, t, costo) = c_et(spl, componente[u], componente[v])
+                    val lado = Arista(u, v, costo)
+                    gT.agregarArista(lado)
+                    
+                    mapaCCM[Pair(u, v)] = Pair(s, t)
+                }
+            }
+
+            return gT
         }
 
         /**
@@ -245,17 +288,8 @@ public class HeuristicaRPP {
          */        
         private fun esPar(g: GrafoNoDirigido): Boolean {
             val n = g.obtenerNumeroDeVertices()
-            val paridad = BooleanArray(n) { true }
-
-            g.aristas().forEach {
-                val u = it.cualquieraDeLosVertices()
-                val v = it.elOtroVertice(u)
-                
-                paridad[u] = !paridad[u]
-                paridad[v] = !paridad[v]
-            }
-
-            return paridad.all { it }
+            
+            return (0 until n).all { g.grado(it) % 2 == 0 }
         }
 
         /**
@@ -292,20 +326,19 @@ public class HeuristicaRPP {
         }
 
         /**
-         * Encuentra el camino de costo mínimo entre los vértices de una componente
-         * conexa [comp1] y los vértices de otra componente conexa [comp2].
+         * Encuentra el camino de costo mínimo en G entre los vértices de las
+         * componentes conexas [comp1] y [comp2] de GCC.
          * 
-         * Tiempo de ejecución: O(|V|) con |V| siendo el tamaño de una fila de [mat] ???.
-         * Precondición:  [spl] es una función que retorna el camino de ...
-         *                [comp1] es una componente conexa.
-         *                [comp2] es una componente conexa.
+         * Tiempo de ejecución: O(comp1.size * comp2.size).
+         * Precondición:  [spl] es una función que retorna el costo del CCM 
+         *                entre dos vértices de G.
+         *                [comp1] y [comp2] son listas de vértices.
          * Postcondición: [c_et] es un triple que contiene:
-         *                - Un entero que representa el vértice inicial del camino 
-         *                  de costo mínimo entre las componentes [comp1] y [comp2].
-         *                - Un entero que representa el vértice final del camino 
-         *                  de costo mínimo entre las componentes [comp1] y [comp2].
-         *                - Un double que representa el costo mínimo entre las 
-         *                  componentes [comp1] y [comp2].
+         *                - Un entero que representa el vértice inicial del CCM 
+         *                  en G entre las componentes [comp1] y [comp2] de GCC
+         *                - Un entero que representa el vértice final del CCM 
+         *                  em G entre las componentes [comp1] y [comp2] de GCC.
+         *                - Un real que representa el costo del CCM [comp2].
          */
         private fun c_et(
             spl: (Int, Int) -> Double, 
@@ -329,27 +362,14 @@ public class HeuristicaRPP {
             return Triple(i, j, costoMin)
         }
 
-        /* ---------------- EJECUCIÓN DEL CLIENTE ---------------- */
-
+        // ---------------- EJECUCIÓN DEL CLIENTE ----------------
+        
         /**
-         * Retorna un entero que representa el porcentaje de desviación 
-         * dado una solución obtenida y la solución óptima.
-         * 
-         * Tiempo de ejecución: O(1).
-         * Precondición:  [valorObt] es un entero.
-         *                [valorOpt] es un entero
-         * Postcondición: [desv] es un entero que representa la desviación.
-         */ 
-        private fun desv(valorObt: Int, valorOpt: Int): Double {
-            return (valorObt - valorOpt) * 100 / valorOpt.toDouble()
-        }
-
-        /**
-         * Construye un grafo no dirigido al cual se quiere solucionar el problema RPP,
+         * Construye un grafo no dirigido instancia de un problema RPP
          * a partir del archivo en la ruta [nombreArchivo].
          * 
          * El formato del archivo es el siguiente:
-         *  -La primera línea contiene el nombre de la instancia.
+         *  -La primera línea contiene el nombre de la instancia.     
          *  -La segunda línea contiene el número de componentes de la instancia.
          *  -La tercera línea contiene el número de vértices del grafo.
          *  -La cuarta línea contiene el número de aristas requeridas.
@@ -357,14 +377,14 @@ public class HeuristicaRPP {
          *  -Las siguientes líneas contienen los vértices del grafo con el formato:
          *      (-vértice inicial-, -vértice final-)   coste      -entero-       -entero-.
          * 
-         * Tiempo de ejecución: O(?).
-         * Precondición:  [nombreArchivo] es un String que representa la dirección 
-         *                de un archivo con los datos de un grafo no dirigido al que se 
-         *                quiere solucionar el problema RPP.
+         * Tiempo de ejecución: O(|V| + |E|).
+         * Precondición:  [nombreArchivo] es un String que representa el camino 
+         *                a un archivo con una instancia del problema RPP con el
+         *                formato especificado.
          * Postcondición: [extraerDatos] es un par que contiene:
-         *                - Un grafo no dirigido construido con los datos de [nombreArchivo]
-         *                - Un conjunto de Aristas construido con los datos de [nombreArchivo]              
-         */ 
+         *                - El grafo no dirigido que modela la instancia de entrada.
+         *                - Las aristas requeridas de la instancia de entrada.              
+         */
         private fun extraerDatos(nombreArchivo: String): 
             Pair<GrafoNoDirigido, MutableSet<Arista>> {
             // Verifica si el archivo existe
@@ -413,9 +433,7 @@ public class HeuristicaRPP {
 
                 val a = Arista(u, v, peso)
                 
-                agregarAVR(u)
-                agregarAVR(v)
-
+                agregarAVR(a)
                 g.agregarArista(a)
                 R.add(a)
             }
@@ -441,8 +459,19 @@ public class HeuristicaRPP {
         }
 
         /**
-         * Programa cliente.            
-         */ 
+         * Función principal que recibe como entrada los argumentos
+         * de la entrada estándar indicando el algoritmo de apareamiento
+         * a usar [v para VertexScan | a para el algoritmo ávido] y una ruta
+         * válida a un archivo de entrada en formato URPP.
+         *
+         * Ejecuta el algoritmo basado en el propuesto por Christofides et al.
+         * y modificado por Pearn y Wu. sobre la instancia contenida en el
+         * archivo de entrada e imprime el ciclo de retorno en la salida 
+         * estándar, junto con el costo del ciclo y el tiempo de ejecución.
+         *
+         * @throws [RuntimeException] [args].size != 2.
+         * @throws [RuntimeException] [args][0] != "a" && [args][0] != "v".
+         */
         @JvmStatic fun main(args: Array<String>) {
             // Verifica argumentos
             if (args.size != 2 || (args[0] != "a" && args[0] != "v")) {
@@ -457,11 +486,11 @@ public class HeuristicaRPP {
             // Ejecuta el algoritmo RPP
             var ciclo: Iterable<Arista>
             val ms = measureTimeMillis { 
-                ciclo = ejecutarAlgoritmo(g, R, vertexScan)
+                ciclo = algoritmoHeuristicoRPP(g, R, vertexScan)
             }
             
-            // Imprime salida
-            /* ----------- PARA SALIDA ESTÁNDAR -----------
+            // Imprime solución en salida estándar
+            /* ------------- PARA SALIDA ESTÁNDAR ------------
             ciclo.forEach { print("${it.cualquieraDeLosVertices() + 1} ") }
             val u = ciclo.last().cualquieraDeLosVertices()
             println(ciclo.last().elOtroVertice(u) + 1)
@@ -469,12 +498,71 @@ public class HeuristicaRPP {
             val costoTotal = ciclo.sumOf { it.peso() }.toInt()
             println(costoTotal)
             println("%.3f segs.".format(ms / 1000.0))
-            ------------------------------------------------- */
+            ------------- PARA SALIDA ESTÁNDAR ----------- */
+
+            // if (!verificarSolucionRPP(ciclo, R)) {
+            //     println("Error: La solución no es válida.")
+            // }
 
             val nombre = args[1].split("/").last()
             val costo = ciclo.sumOf { it.peso() }.toInt()
             val tiempo = ms / 1000.0
             println("$nombre,$costo,$tiempo")
+        }
+
+        // ---------------- VERIFICADOR DEL ALGORITMO ----------------
+        /**
+         * Retorna un booleano que indica si [ciclo] es una solución
+         * válida al problema RPP con conjunto [R] de lados requeridos.
+         * 
+         * Tiempo de ejecución: O(|R| + ciclo.size).
+         * Precondición:  [ciclo] es un iterable con las Aristas del ciclo
+         *                        solución obtenido.
+         *                [R] es el conjunto de aristas requeridas del RPP.
+         * Postcondición: [verificarSolucionRPP] es
+         *                  - True si [ciclo] es una solución válida al problema RPP.
+         *                  - False de otra forma.
+         */ 
+        private fun verificarSolucionRPP(
+            ciclo: Iterable<Arista>,
+            R: MutableSet<Arista>
+        ): Boolean {
+            val RPares = mutableSetOf<Pair<Int, Int>>()          
+            R.forEach {
+                val u = it.cualquieraDeLosVertices()
+                val v = it.elOtroVertice(u)
+                RPares.add(Pair(u, v))
+                RPares.add(Pair(v, u))
+            }
+            
+            // Verificación de correctitud del circuito obtenido
+            var sumideroAnterior = ciclo.first().cualquieraDeLosVertices()
+            var aristaAparece = mutableSetOf<Arista>()
+
+            ciclo.forEach {
+                if (!aristaAparece.add(it)) {
+                    println("   -Error: No se obtuvo un ciclo euleriano.")
+                    return@forEach
+                }
+
+                val fuenteActual = it.cualquieraDeLosVertices()
+                if (sumideroAnterior != fuenteActual) {
+                    println("   -Error: No se obtuvo un ciclo euleriano.")
+                    return@forEach
+                }
+                sumideroAnterior = it.elOtroVertice(fuenteActual)
+
+                // Verificacion que ciclo contiene los lados de R
+                val u = it.cualquieraDeLosVertices()
+                val v = it.elOtroVertice(u)
+
+                RPares.remove(Pair(u, v))
+                RPares.remove(Pair(v, u))
+            }
+
+            if (RPares.isNotEmpty()) return false
+
+            return true
         }
     }
 }
