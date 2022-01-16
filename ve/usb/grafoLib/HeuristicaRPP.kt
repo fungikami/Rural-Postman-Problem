@@ -33,7 +33,7 @@ public class HeuristicaRPP {
          * Ejecuta el algoritmo propuesto por Christofides et al. y modificado
          * por Pearn y Wu para hallar una solución al problema RPP.
          * 
-         * Tiempo de ejecución: O(?).
+         * Tiempo de ejecución: O(|V|³).
          * Precondición:  [g] es un grafo no dirigido.
          *                [R] es un conjunto de aristas requeridas del RPP.
          *                [usarVertexScan] es un booleano que indica si se 
@@ -127,7 +127,7 @@ public class HeuristicaRPP {
                 // Determina apareamiento perfecto M al grafo G0
                 val M = if (usarVertexScan) {
                     ApareamientoVertexScan(g0).obtenerApareamiento()
-                 } else {
+                } else {
                     ApareamientoPerfectoAvido(g0).obtenerApareamiento()
                 }
 

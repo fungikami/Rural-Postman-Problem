@@ -1,0 +1,12 @@
+O(VR + R) Grafo G
+O(VR * R) Grafo GCC
+O(V * E * log(V))  Calcular costos minimo
+O(Vt⁴) Grafo Gt
+O(Et * log(Vt)) eMST
+O(V0²) Grafo G0
+[
+    O(V0² * log(V0) VertexScan
+    O(V0² * log(V0) Greedy
+]
+O(V0²) Agregar a G'
+O(V'+E') Ciclo euleriano

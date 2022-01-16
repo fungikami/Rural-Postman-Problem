@@ -84,8 +84,8 @@ public class CicloEulerianoGrafoNoDirigido(val g: GrafoNoDirigido) {
      * agrega las arista al ciclo euleriano al terminar un camino.
      * 
      * Tiempo de ejecución: O(|E|).
-     * Precondición: [g] es un dígrafo.
-     *               [lado] es un arista perteneciente al dígrafo.
+     * Precondición: [g] es un grafo no dirigido.
+     *               [lado] es un arista perteneciente al grafo no dirigido.
      * Postcondición: true
      */
     private fun eulerTour(g: GrafoNoDirigido, lado: Arista, verticeInicial: Int) {

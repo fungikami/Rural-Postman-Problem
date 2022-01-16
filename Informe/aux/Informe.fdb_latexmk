@@ -1,7 +1,7 @@
 # Fdb version 3
-["pdflatex"] 1642286471 "/home/fung/Downloads/LabAlgosIII/RPPProyecto/Informe/Informe.tex" "/home/fung/Downloads/LabAlgosIII/RPPProyecto/Informe/aux/Informe.pdf" "Informe" 1642286471
+["pdflatex"] 1642286471 "/home/fung/Downloads/LabAlgosIII/RPPProyecto/Informe/Informe.tex" "/home/fung/Downloads/LabAlgosIII/RPPProyecto/Informe/aux/Informe.pdf" "Informe" 1642310831
   "/etc/texmf/web2c/texmf.cnf" 1637695643 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/fung/Downloads/LabAlgosIII/RPPProyecto/Informe/Informe.tex" 1642286471 6806 c36e1707741707e327e6f0c301dca8de ""
+  "/home/fung/Downloads/LabAlgosIII/RPPProyecto/Informe/Informe.tex" 1642310830 6806 c36e1707741707e327e6f0c301dca8de ""
   "/home/fung/Downloads/LabAlgosIII/RPPProyecto/Informe/aux/Informe.aux" 1642286471 1014 31222dd21609ed19500afb4bf8dd2cce ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
@@ -85,13 +85,13 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1581979058 38841 ce3692aa899bb693b90b87eaa5d4d84e ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1637695691 4770781 1ed1abab22da9c3e2cc82e4db562318b ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1637695707 8255849 11fab1e02fe98964809a9ffafd55aa0f ""
-  "Informe.tex" 1642286471 6806 c36e1707741707e327e6f0c301dca8de ""
+  "Informe.tex" 1642310830 6806 c36e1707741707e327e6f0c301dca8de ""
   "aux/Informe.aux" 1642286471 1014 31222dd21609ed19500afb4bf8dd2cce "pdflatex"
   "clrscode3e.sty" 1641934556 15011 8771cee84eb571564c963f8926641deb ""
   "logotip.png" 1642283984 72314 74c8fc5bcee9aabb317892b890aadd1b ""
   (generated)
   "/home/fung/Downloads/LabAlgosIII/RPPProyecto/Informe/aux/Informe.pdf"
-  "/home/fung/Downloads/LabAlgosIII/RPPProyecto/Informe/aux/Informe.log"
   "aux/Informe.aux"
   "aux/Informe.log"
   "aux/Informe.pdf"
+  "/home/fung/Downloads/LabAlgosIII/RPPProyecto/Informe/aux/Informe.log"
