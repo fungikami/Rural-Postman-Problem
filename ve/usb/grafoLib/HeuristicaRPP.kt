@@ -489,20 +489,23 @@ public class HeuristicaRPP {
                 ciclo = algoritmoHeuristicoRPP(g, R, vertexScan)
             }
             
-            // Imprime solución en salida estándar
-            /* ------------- PARA SALIDA ESTÁNDAR ------------
-            ciclo.forEach { print("${it.cualquieraDeLosVertices() + 1} ") }
-            val u = ciclo.last().cualquieraDeLosVertices()
-            println(ciclo.last().elOtroVertice(u) + 1)
-            
-            val costoTotal = ciclo.sumOf { it.peso() }.toInt()
-            println(costoTotal)
-            println("%.3f segs.".format(ms / 1000.0))
-            ------------- PARA SALIDA ESTÁNDAR ----------- */
-
-            // if (!verificarSolucionRPP(ciclo, R)) {
-            //     println("Error: La solución no es válida.")
+            // // Imprime solución en salida estándar
+            // ciclo.forEach {
+            //     val u = fInv(it.cualquieraDeLosVertices()) + 1
+            //     print("$u ")
             // }
+            // val aFinal = ciclo.last()
+            // val u = aFinal.cualquieraDeLosVertices()
+            // val v = fInv(aFinal.elOtroVertice(u)) + 1
+            // println("$v")
+            
+            // val costoTotal = ciclo.sumOf { it.peso() }.toInt()
+            // println(costoTotal)
+            // println("%.3f segs.".format(ms / 1000.0))
+
+            if (!verificarSolucionRPP(ciclo, R)) {
+                println("Error: La solución no es válida.")
+            }
 
             val nombre = args[1].split("/").last()
             val costo = ciclo.sumOf { it.peso() }.toInt()
@@ -541,14 +544,14 @@ public class HeuristicaRPP {
 
             ciclo.forEach {
                 if (!aristaAparece.add(it)) {
-                    println("   -Error: No se obtuvo un ciclo euleriano.")
-                    return@forEach
+                    println("Una arista se repite en el ciclo")
+                    return false
                 }
 
                 val fuenteActual = it.cualquieraDeLosVertices()
                 if (sumideroAnterior != fuenteActual) {
-                    println("   -Error: No se obtuvo un ciclo euleriano.")
-                    return@forEach
+                    println("Dos aristas adyacentes no concuerdan")
+                    return false
                 }
                 sumideroAnterior = it.elOtroVertice(fuenteActual)
 
@@ -556,11 +559,15 @@ public class HeuristicaRPP {
                 val u = it.cualquieraDeLosVertices()
                 val v = it.elOtroVertice(u)
 
-                RPares.remove(Pair(u, v))
-                RPares.remove(Pair(v, u))
+                RPares.remove(Pair(fInv(u), fInv(v)))
+                RPares.remove(Pair(fInv(v), fInv(u)))
             }
 
-            if (RPares.isNotEmpty()) return false
+            if (RPares.isNotEmpty()) {
+                println("Hay lados de R que no aparecen en el ciclo")
+                println(R)
+                return false
+            }
 
             return true
         }

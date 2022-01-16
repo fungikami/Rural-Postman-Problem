@@ -47,7 +47,7 @@ public class CicloEulerianoGrafoNoDirigido(val g: GrafoNoDirigido) {
         val u1 = l1.cualquieraDeLosVertices()
         val v1 = l1.elOtroVertice(u1)
         val u2 = l2.cualquieraDeLosVertices()
-        val v2 = l1.elOtroVertice(u2)
+        val v2 = l2.elOtroVertice(u2)
 
         if (v1 == u2) {
         } else if (u1 == u2) {
