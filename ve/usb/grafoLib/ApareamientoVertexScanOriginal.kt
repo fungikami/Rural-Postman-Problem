@@ -6,7 +6,6 @@
 package ve.usb.grafoLib
 
 import java.util.LinkedList
-import kotlin.Double.Companion.POSITIVE_INFINITY
 
 /**
  * Implementación del algoritmo Vertex Scan para obtener un apareamiento
@@ -32,27 +31,46 @@ public class ApareamientoVertexScan(g: GrafoNoDirigido) {
         // Crea V'
         val vP = mutableSetOf<Int>()
         for (i in 0 until n) vP.add(i)
+
+        // Crea E', se añaden los lados (u, v) y (v, u)
+        val eP = g.aristas().toMutableList()
+        val m = eP.size
+
+        for (i in 0 until m) { 
+            val u = eP[i].cualquieraDeLosVertices()
+            val v = eP[i].elOtroVertice(u)
+            eP.add(Arista(v, u, eP[i].peso()))
+        }
+
+        // Se ordenan los lados
+        eP.sortWith(compareBy({ it.cualquieraDeLosVertices() }, { it }))
+
+        val indV = IntArray(n)
+        var k = -1
+        
+        // indV[i] = { índ. de la 1ra aparición de (i, j) en eP para algún j }
+        eP.forEachIndexed { i, it ->
+            val u = it.cualquieraDeLosVertices()
+            if (u > k) {
+                k = u
+                indV[k] = i
+            }
+        }
         
         while (!vP.isEmpty()) {
             // Escoge aleatoriamente un vértice i de vP
             val i = vP.random()
 
             // Escoge el lado (i, j) con con menor costo
-            var lado = Arista(0, 1)
-            var min = POSITIVE_INFINITY
-            g.adyacentes(i).forEach {
-                val p = it.peso()
+            val lado: Arista
+            var j = indV[i]
+            while (!vP.remove(eP[j].elOtroVertice(i))) j++
+            lado = eP[j] 
 
-                if (it.elOtroVertice(i) in vP && p < min) {
-                    min = p
-                    lado = it
-                }
-            }
             M.add(lado)
             
             // Elimina los vértices i, j de vP
             vP.remove(i)
-            vP.remove(lado.elOtroVertice(i))
         }
     }
      
