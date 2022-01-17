@@ -235,16 +235,53 @@ orientadas de forma correcta al obtener el ciclo, lo cual agrega al
 algoritmo un trabajo de tiempo lineal con respecto a los lados del
 ciclo, sin afectar la complejidad temporal del algoritmo original. \\
 
-De esta forma, para obtener el 
-Algoritmo de Dijkstra para obtener los caminos de costo mínimo en grafos no dirigidos. \\
+De esta forma, se tiene que el algoritmo implementado halla los caminos
+de costo mínimo entre componentes de $G'$, paso en el que se optó por usar
+el \texttt{DijkstraGrafoNoDirigido} mencionado para, de forma similar
+al algoritmo de Johnson, construir una matriz $matCCM$ en la que $matCCM_{ij}$
+representa el costo del camino de costo mínimo entre los vértices $i$ y $j$ de
+$G$; se usa el hecho de que $G$ es no dirigido para disminuir constantes ocultas
+y calcular solamente la triangular superior de $matCCM$, ya que como el camino de 
+costo mínimo de $i$ a $j$ será el mismo que el de $j$ a $i$, la matriz será simétrica.
+La complejidad temporal de construir $matCCM$ es, de igual forma, $O(|V||E|log|V|)$. \\ 
 
-Algoritmo de Prim para obtener el árbol mínimo cobertor.\\
+Consecuentemente, se usa esta matriz para obtener el costo de los lados $e_t$ que
+conformarán $G_t$, dado por la función
 
-Algoritmo para obtener el ciclo euleriano de grafos no dirigidos.\\
+\[
+   c_{et}(e_t) = \text{mín}\{matCCM_{ij} | i \in C_i \land j \in C_j \land i \neq j \}
+\]
 
-Algoritmo de apareamiento perfecto ávido.\\
+sean $C_i$, $C_j$ componentes conexas distintas de $G$.
 
-Algoritmo de apareamiento perfecto Vertex-Scan.\\
+Prosiguiendo, para el paso de obtener el $E_{MST}$ se usa sin más detalles el algoritmo
+de Prim previamente implementado en \texttt{grafoLib}, porque demostró en estudios
+anteriores ser más eficiente en la práctica que el algoritmo de Kruskal basado en
+conjuntos disjuntos. Inmediatamente, se obtienen los caminos de costo mínimo asociados
+para obtener $E_t$ usando instancias de la clase \texttt{DijkstraGrafoNoDirigido} guardadas
+anteriormente. \\
+
+Una vez agregados a $G'$ los lados de $E_t$ y modelado $G_0$ mediante el isomorfismo 
+explicado, solo resta obtener el apareamiento perfecto del mismo, para el cual se
+implementaron un algoritmo ávido y \emph{Vertex-Scan}. \\
+
+Para el algoritmo ávido, se implementó usando una lista enlazada que almacena todos
+los lados del grafo y luego los ordena por costos en orden ascendente, para
+desencolarlos en cada iteración, y se implementa el conjunto $V'$ del
+algoritmo mediante (i) un arreglo de valores booleanos que indican si un 
+vértice está en $V'$, y una variable que mantiene la cantidad de pares de vértices
+en $V'$. La complejidad temporal de este algoritmo resulta de $O(|V|^2log|V|)$,
+obteniendo este tiempo por el paso que ordena los lados en orden ascendente, y
+dado que se tiene que $|E|$ = $O(|V|^2)$ al ser el grafo de entrada completo. \\
+
+Por el otro lado, el algoritmo Vertex-Scan tiene una implementación más
+sencilla que consiste solamente en tener el conjunto $V'$ como un \texttt{MutableSet}
+de Kotlin y, al obtener un elemento aleatorio de este, iterar sobre todos sus adyacentes
+y escoger el lado que tenga costo mínimo tal que el otro vértice esté en $V$; esto se 
+asemeja a escoger aleatoriamente una fila de una matriz y escanear toda la columna
+buscando el lado de costo mínimo, de donde obtiene su nombre el algoritmo, y dando 
+como resultado una implementación que ocurre en tiempo asintótico $O(|V|^2)$, como
+se señala en [1].
 
 Programa cliente para la solución del problema RPP.\\
 
