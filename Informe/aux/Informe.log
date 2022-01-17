@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Debian) (preloaded format=pdflatex 2021.11.12)  17 JAN 2022 06:17
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020/Debian) (preloaded format=pdflatex 2021.11.12)  17 JAN 2022 06:20
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -319,7 +319,10 @@ Package: listings 2020/03/24 1.8d (Carsten Heinz)
 File: l3backend-pdftex.def 2020-01-29 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count296
 \l__pdf_internal_box=\box101
-) (/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.aux)
+) (/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.aux
+LaTeX Info: Redefining \. on input line 8.
+LaTeX Info: Redefining \% on input line 8.
+)
 \openout1 = `Informe.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 41.
@@ -507,19 +510,9 @@ Underfull \hbox (badness 10000) in paragraph at lines 285--294
  []
 
 [4]
-
-LaTeX Warning: Reference `tablaDesv' on page 5 undefined on input line 319.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 319--326
 
  []
-
-
-LaTeX Warning: Reference `tablaTiempos' on page 5 undefined on input line 327.
-
-
-LaTeX Warning: Reference `tablaDesv' on page 5 undefined on input line 435.
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 435--443
@@ -532,16 +525,9 @@ Underfull \hbox (badness 10000) in paragraph at lines 444--454
  []
 
 [5] [6] [7]
-
-LaTeX Warning: Reference `tablaDesv' on page 8 undefined on input line 456.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 455--461
 
  []
-
-
-LaTeX Warning: Reference `tablaTiempos' on page 8 undefined on input line 462.
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 462--470
@@ -549,51 +535,24 @@ Underfull \hbox (badness 10000) in paragraph at lines 462--470
  []
 
 
-LaTeX Warning: Reference `tablaTiempos' on page 8 undefined on input line 476.
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 471--477
 
  []
 
-[8]
-Underfull \hbox (badness 10000) in paragraph at lines 546--548
-
- []
-
-/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/Informe.tex:548: Misplaced alignment tab character &.
-<recently read> &
-                 
-l.548 ...r the rural postman problem. Computers $&
-                                                   $Operations Research, 22(...
-I can't figure out why you would want to use a tab mark
-here. If you just want an ampersand, the remedy is
-simple: Just type `I\&' now. But if some right brace
-up above has ended a previous alignment prematurely,
-you're probably due for more error messages, and you
-might try typing `S' now just to see what is salvageable.
-
-[9] (/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.aux
+[8] [9] (/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.aux
 LaTeX Info: Redefining \. on input line 8.
 LaTeX Info: Redefining \% on input line 8.
-)
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
- ) 
+) ) 
 Here is how much of TeX's memory you used:
  7079 strings out of 479304
  105258 string characters out of 5869778
- 439379 words of memory out of 5000000
+ 439386 words of memory out of 5000000
  24173 multiletter control sequences out of 15000+600000
  413165 words of font info for 63 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  68i,12n,74p,357b,361s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.pfb>
-Output written on /home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.pdf (9 pages, 225756 bytes).
+Output written on /home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.pdf (9 pages, 225736 bytes).
 PDF statistics:
  87 PDF objects out of 1000 (max. 8388607)
  61 compressed objects within 1 object stream
