@@ -106,6 +106,39 @@ dos algoritmos aplicados a solucionar 36 distintas del problema RPP. \\
 
 \section{Diseño de la solución}
 
+Para resolver el \emph{problema del cartero rural} se usó el algoritmo constructivo
+proveído por el profesor del curso, basado en el presentado por Pearn y Wu en [2]. \\
+
+La idea principal de dicho algoritmo consiste en modelar la instancia del problema
+con un grafo no dirigido $G = (V, E)$ y un subconjunto $R \subseteq E$ que representa
+las aristas por las que el cartero debe pasar en el ciclo buscado. Luego, construir a
+partir del conjunto $R$ un grafo $G' = (V_R, R)$, al cual se le añaden lados y vértices en varias
+ocasiones hasta obtener finalmente un grafo par y conexo del cual obtener un ciclo
+euleriano que servirá como solución aproximada del problema. \\
+
+Los procedimientos para añadir lados al grafo $G'$ en dos ocasiones
+se pueden resumir y simplificar como los siguientes:
+
+\begin{itemize}
+   \item Se construye un grafo $G_t$ completo donde cada vértice
+   es una componente conexa de $G'$ y el costo de cada lado corresponde
+   al del camino de costo mínimo entre dichas componentes en $G$.
+   
+   \item Se obtiene el conjunto $E_{MST}$ de los lados del arbol mínimo
+   cobertor de $G_t$.
+
+   \item Se construye $E_t$ como el conjunto de lados de los
+   caminos de costo mínimo asociados a cada lado de $E_{MST}$.
+
+   \item Se agrega al conjunto de vértices de $G'$ los
+   vértices que aparecen $E_t$, y luego los lados admitiendo
+   duplicados.
+\end{itemize}
+
+En este punto se ha convertido $G'$ en un grafo conexo, pues
+hemos añadido a cada componente conexa del grafo $G'$ inicial
+
+
 Construcción de grafo GR y G' (mapeo G -> GR) \\
 
 Construcción del grafo G0 (mapeo GR -> G0) \\
@@ -113,8 +146,6 @@ Construcción del grafo G0 (mapeo GR -> G0) \\
 Implementación del algoritmo de Dijkstra para grafos no dirigidos\\
 
 Implementación del ciclo euleriano para grafos no dirigidos\\
-
-
 
 
 \section{Detalles de la implementacion}
@@ -135,14 +166,14 @@ Programa cliente para la solución del problema RPP.\\
 
 
 \section{Detalles de la plataforma}
-Los siguientes son los detalles de la máquina y el entorno donde se ejecutaron los algoritmos:
+Los siguientes son los detalles de la máquina y el entorno donde se ejecutaron las implementaciones:
 
 \begin{itemize}
-   \item \textbf{Sistema operativo}: GNU/Linux (Linux Mint 20 Ulyana).
-   \item \textbf{Procesador}: Intel(R) Core(TM) i7-8750H.
-   \item \textbf{Memoria RAM}: 8GB.
-   \item \textbf{Compilador}: Kotlin version 1.5.31 (JRE 11.0.9.1+1-Ubuntu-0ubuntu1.20.04).
-   \item \textbf{Entorno de ejecución}: OpenJDK Runtime Environment (11.0.9.1).
+   \item \textbf{Sistema operativo}: GNU/Linux (Debian 11 Bullseye 64-bit).
+   \item \textbf{Procesador}: Intel(R) Core(TM) i3-2120 CPU @3.30GHz.
+   \item \textbf{Memoria RAM}: 4,00 GB (3,88 GB usables).
+   \item \textbf{Compilador}: kotlinc-jvm 1.6.10 (JRE 11.0.12+7-post-Debian-2).
+   \item \textbf{Entorno de ejecución}:OpenJDK Runtime Environment (build 11.0.12+7-post-Debian-2).
    % \item \textbf{Flags (máquina virtual)}: -Xmx2g.
 \end{itemize}
 
@@ -155,54 +186,53 @@ del problema de RPP, se calculó el porcentaje de desviación con la fórmula:
     \%desv = \cfrac{\text{valor obtenido} - \text{valor óptimo}}{\text{valor óptimo}} *100
 \end{equation}
 
-
 \begin{table}[htbp]
    \begin{center}
-   \begin{tabular}{|r|r|r|r|}
+   \begin{tabular}{|r|r|r|r|r|}
    \hline
-   \multicolumn{1}{|c|}{Nombre de} & \multicolumn{1}{c|}{Valor} & \multicolumn{ 2}{c|}{Desviación (\%) } \\ \cline{3-4}
-   \multicolumn{1}{|c|}{la instancia} & \multicolumn{1}{c|}{óptimo} & \multicolumn{1}{c|}{Alg. Ávido} & \multicolumn{1}{c|}{Vertex-Scan} \\ \hline
-   \texttt{UR132} & \textbf{23913} & 16,271 & 20,655 \\ 
-   \texttt{UR135} & \textbf{33088} & 14,335 & 16,814 \\ 
-   \texttt{UR137} & \textbf{42797} & 10,347 & 13,594 \\ 
-   \texttt{UR142} & \textbf{25548} & 15,935 & 19,035 \\ 
-   \texttt{UR145} & \textbf{39008} &  7,342 & 12,603 \\ 
-   \texttt{UR147} & \textbf{55959} &  6,346 &  7,604 \\ 
-   \texttt{UR152} & \textbf{28975} & 11,365 & 17,336 \\ 
-   \texttt{UR155} & \textbf{49156} &  4,669 &  7,078 \\ 
-   \texttt{UR157} & \textbf{70231} &   3,91 &  4,595 \\ 
-   \texttt{UR162} & \textbf{32341} & 10,998 & 12,462 \\ 
-   \texttt{UR165} & \textbf{58800} &  4,978 &    6,2 \\ 
-   \texttt{UR167} & \textbf{82481} &  2,917 & 3,572 \\ 
-   \texttt{UR532} & \textbf{17277} & 16,438 & 22,261 \\ 
-   \texttt{UR535} & \textbf{23635} & 16,306 & 16,839 \\ 
-   \texttt{UR537} & \textbf{30098} &  9,253 & 12,324 \\ 
-   \texttt{UR542} & \textbf{17830} & 14,173 & 20,269 \\ 
-   \texttt{UR545} & \textbf{29648} &  6,365 & 8,835 \\ 
-   \texttt{UR547} & \textbf{38692} &  4,784 & 7,877 \\ 
-   \texttt{UR552} & \textbf{20097} & 12,579 & 16,875 \\ 
-   \texttt{UR555} & \textbf{34488} &  4,126 & 8,069 \\ 
-   \texttt{UR557} & \textbf{48307} &  4,651 & 3,97 \\ 
-   \texttt{UR562} & \textbf{24556} &  7,188 & 10,541 \\ 
-   \texttt{UR565} & \textbf{42828} &  4,056 & 5,17 \\ 
-   \texttt{UR567} & \textbf{58971} &  4,087 & 4,015 \\ 
-   \texttt{UR732} & \textbf{21114} & 18,751 & 21,313 \\ 
-   \texttt{UR735} & \textbf{28663} & 10,623 & 15,26 \\ 
-   \texttt{UR737} & \textbf{36588} &  6,308 & 11,45 \\ 
-   \texttt{UR742} & \textbf{22557} & 13,078 & 17,916 \\ 
-   \texttt{UR745} & \textbf{32493} &  10,19 & 10,96 \\ 
-   \texttt{UR747} & \textbf{47764} &  5,481 & 6,385 \\ 
-   \texttt{UR752} & \textbf{25131} & 12,614 & 15,796 \\ 
-   \texttt{UR755} & \textbf{41774} &  4,517 & 8,357 \\ 
-   \texttt{UR757} & \textbf{58416} &  4,002 & 5,876 \\ 
-   \texttt{UR762} & \textbf{27880} &  8,691 & 13,155 \\ 
-   \texttt{UR765} & \textbf{50492} &  4,565 & 5,696 \\ 
-   \texttt{UR767} & \textbf{72950} &  3,413 & 3,911 \\ \hline
+   \multicolumn{1}{|c|}{Nombre de} & \multicolumn{1}{c|}{Valor} & \multicolumn{ 2}{c|}{Desviación (\%)} & \multicolumn{1}{c|}{Promedio } \\ \cline{3-4}
+   \multicolumn{1}{|c|}{la instancia} & \multicolumn{1}{c|}{óptimo} & \multicolumn{1}{c|}{Alg. Ávido} & \multicolumn{1}{c|}{Vertex-Scan} & \multicolumn{1}{c|}{Resultado V-S} \\ \hline
+   \texttt{UR132} & \textbf{23913} & 16,271 & 20,655 & 28852 \\
+   \texttt{UR135} & \textbf{33088} & 14,335 & 16,814 & 38651 \\
+   \texttt{UR137} & \textbf{42797} & 10,347 & 13,594 & 48615 \\
+   \texttt{UR142} & \textbf{25548} & 15,935 & 19,035 & 30411 \\
+   \texttt{UR145} & \textbf{39008} & 7,342 & 12,603 & 43924 \\
+   \texttt{UR147} & \textbf{55959} & 6,346 & 7,604 & 60214 \\
+   \texttt{UR152} & \textbf{28975} & 11,365 & 17,336 & 33998 \\
+   \texttt{UR155} & \textbf{49156} & 4,669 & 7,078 & 52635 \\
+   \texttt{UR157} & \textbf{70231} & 3,91 & 4,595 & 73458 \\
+   \texttt{UR162} & \textbf{32341} & 10,998 & 12,462 & 36371 \\
+   \texttt{UR165} & \textbf{58800} & 4,978 & 6,2 & 62446 \\
+   \texttt{UR167} & \textbf{82481} & 2,917 & 3,572 & 85427 \\
+   \texttt{UR532} & \textbf{17277} & 16,438 & 22,261 & 21123 \\
+   \texttt{UR535} & \textbf{23635} & 16,306 & 16,839 & 27615 \\
+   \texttt{UR537} & \textbf{30098} & 9,253 & 12,324 & 33807 \\
+   \texttt{UR542} & \textbf{17830} & 14,173 & 20,269 & 21444 \\
+   \texttt{UR545} & \textbf{29648} & 6,365 & 8,835 & 32267 \\
+   \texttt{UR547} & \textbf{38692} & 4,784 & 7,877 & 41740 \\
+   \texttt{UR552} & \textbf{20097} & 12,579 & 16,875 & 23488 \\
+   \texttt{UR555} & \textbf{34488} & 4,126 & 8,069 & 37271 \\
+   \texttt{UR557} & \textbf{48307} & 4,651 & 3,97 & 50225 \\
+   \texttt{UR562} & \textbf{24556} & 7,188 & 10,541 & 27144 \\
+   \texttt{UR565} & \textbf{42828} & 4,056 & 5,17 & 45042 \\
+   \texttt{UR567} & \textbf{58971} & 4,087 & 4,015 & 61339 \\
+   \texttt{UR732} & \textbf{21114} & 18,751 & 21,313 & 25614 \\
+   \texttt{UR735} & \textbf{28663} & 10,623 & 15,26 & 33037 \\
+   \texttt{UR737} & \textbf{36588} & 6,308 & 11,45 & 40777 \\
+   \texttt{UR742} & \textbf{22557} & 13,078 & 17,916 & 26598 \\
+   \texttt{UR745} & \textbf{32493} & 10,19 & 10,96 & 36054 \\
+   \texttt{UR747} & \textbf{47764} & 5,481 & 6,385 & 50814 \\
+   \texttt{UR752} & \textbf{25131} & 12,614 & 15,796 & 29101 \\
+   \texttt{UR755} & \textbf{41774} & 4,517 & 8,357 & 45265 \\
+   \texttt{UR757} & \textbf{58416} & 4,002 & 5,876 & 61849 \\
+   \texttt{UR762} & \textbf{27880} & 8,691 & 13,155 & 31548 \\
+   \texttt{UR765} & \textbf{50492} & 4,565 & 5,696 & 53368 \\
+   \texttt{UR767} & \textbf{72950} & 3,413 & 3,911 & 75803 \\ \hline
    \end{tabular}
    \end{center}
    \caption{Desviación de los resultados obtenidos para cada algoritmo}
    \label{tablaDesv}
-   \end{table}
+\end{table}   
 
 \begin{table}[htbp]
    \begin{center}
@@ -252,7 +282,7 @@ del problema de RPP, se calculó el porcentaje de desviación con la fórmula:
    \end{center}
    \caption{Tiempo de ejecución de la implementación para cada instancia}
    \label{tablaTiempos}
-   \end{table}
+\end{table}
    
 
 \section{Análisis de los resultados}
