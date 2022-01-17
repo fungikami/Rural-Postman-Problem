@@ -137,21 +137,105 @@ se pueden resumir y simplificar como los siguientes:
 
 En este punto se ha convertido $G'$ en un grafo conexo, pues
 hemos añadido a cada componente conexa del grafo $G'$ inicial
+los caminos más cortos que las unen, por lo que solo resta
+hacer que $G'$ sea par para poder obtener de él un ciclo
+euleriano:
 
+\begin{itemize}
+   \item Se obtiene el conjunto $V_0$ de los vértices de 
+   grado impar de $G'$ y se construye de él un grafo completo
+   $G_0$, donde el costo de cado lado corresponde al del camino
+   de costo mínimo entre tales vértices en $G$.
 
-Construcción de grafo GR y G' (mapeo G -> GR) \\
+   \item Se determina $M$ como el conjunto de lados que conforman
+   un \textbf{apareamiento perfecto} de $G_0$
+   
+   \item Para cada lado de $M$, se obtiene el camino de costo
+   mínimo asociado al mismo en $G$, y se añaden a $G'$ sus
+   vértices y luego sus lados, admitiendo nuevamente los
+   duplicados para estos últimos.
+\end{itemize}
 
-Construcción del grafo G0 (mapeo GR -> G0) \\
+Se tiene que finalmente $G'$ es conexo y par, debido a que este
+último procedimiento, al tratarse de los caminos obtenidos de
+un apareamiento perfecto, añadirá un lado a los vértices inicial y final,
+inicialmente de grado impar, y dos lados a todos los demás vértices
+del camino, manteniéndolos pares. \\
 
-Implementación del algoritmo de Dijkstra para grafos no dirigidos\\
+Ya teniendo un grafo $G'$ conexo y par, se puede obtener de él
+un ciclo euleriano que será la solución aproximada al problema 
+modelado por $G$. \\
 
-Implementación del ciclo euleriano para grafos no dirigidos\\
-
+Cabe destacar que el algoritmo propuesto busca obtener un
+\textbf{apareamiento perfecto de costo mínimo} para hacer el
+grafo $G'$ par, sin embargo, para simplificar la implementación
+se usaron algoritmos que obtienen un apareamiento perfecto 
+aproximado al de costo mínimo. Además, es importante mencionar
+que si luego de añadir los primeros lados a $G'$ el grafo resultante
+es par, se obtiene directamente el ciclo euleriano, y análogamente
+si al comienzo del algoritmo $G'$ era conexo y par.
 
 \section{Detalles de la implementacion}
 
-Algoritmo para obtener las componentes conexas en grafos no dirigidos. \\
+La implementación de todos los algoritmos se realizó en el
+lenguaje de programación \texttt{Kotlin}, mediante el uso
+y la modificación de la librería \texttt{grafoLib}, construida
+a lo largo del curso. \\
 
+Uno de los primeros aspectos a tomar en cuenta consistió en
+modificar las implementaciones de la clase \texttt{GrafoNoDirigido}
+para permitir tener lados duplicados, pues es un requerimiento
+del algoritmo en dos ocasiones. \\
+
+Luego, dado que los grafos de la librería \texttt{grafoLib}
+tienen un número fijo $n$ de vértices en el intervalo $[0 .. n)$,
+surgió el problema de cómo crear el grafo inicial $G'$, teniendo
+que sus vértices consistirán en los vértices que aparecen en $R$,
+que a pesar de ser un subconjunto de $V$, puede estar conformado,
+por ejemplo, por los dos primeros y los dos últimos vértices de
+$G$, generando un grafo de a lo sumo 4 vértices en el intervalo 
+$[0..n)$, imposible en \texttt{grafoLib} si $n > 4$. \\
+
+Para resolver este problema, en la implementación se construye
+una función biyectiva $f: V \rightarrow V_R $ que es usada para
+modelar $G'$ mediante un grafo isomorfo que permita relacionar
+sus vértices con los vértices correspondientes de $G$
+cuando sea necesario, como también relacionar $G$ con el grafo
+isomorfo de $G'$ por medio de $f^{-1}$. Este detalle no afecta
+gravemente la eficiencia de la implementación debido a que el 
+modelado de $f$ y $f^{-1}$ se basa en arreglos dinámicos y 
+diccionarios como tablas de hash, por lo que cada mapeo que
+se hace con estas funciones ocurre en un tiempo amortizado
+constante, \\
+
+Análogamente, se presentó el mismo problema más adelante
+con el grafo $G_0$ y el conjunto de vértices de grado impar,
+solucionado de forma similar modelando $G_0$ mediante un grafo
+isomorfo inducido por la función $h: V_R \rightarrow V_0 $ que
+permite relacionar sus vértices con los vértices del isomorfismo
+de $G'$. En el código fuente solo se construye $ h^{-1} $ por ser
+la única necesaria. \\
+
+En seguida, como el algoritmo requiere de la búsqueda de 
+caminos de costo mínimo (al hallar caminos entre pares de componentes
+conexas y de pares de vértices de $V_0$), se requirió modificar
+el algoritmo de Dijkstra, originalmente pensado para dígrafos,
+para hallar caminos de costo mínimo en grafos no dirigidos. 
+La modificación, realizada en la clase \texttt{DijsktraGrafoNoDirigido},
+consistió en dar ``orientación'' a las relajaciones de las aristas,
+a pesar de que se tiene que $(u, v) = (v, u)$, con el fin de obtener
+resultados correctos, además de modificaciones mínimas de la
+misma índole al momento de hacer \emph{backtracking} para hallar
+caminos de costo mínimo. \\
+
+De igual manera, se implementó una modificación del algoritmo para
+obtener ciclos eulerianos en la clase \texttt{CicloEulerianoGrafoNoDirigido},
+con la misma idea de dar orientación a las aristas y que estas estén
+orientadas de forma correcta al obtener el ciclo, lo cual agrega al
+algoritmo un trabajo de tiempo lineal con respecto a los lados del
+ciclo, sin afectar la complejidad temporal del algoritmo original. \\
+
+De esta forma, para obtener el 
 Algoritmo de Dijkstra para obtener los caminos de costo mínimo en grafos no dirigidos. \\
 
 Algoritmo de Prim para obtener el árbol mínimo cobertor.\\

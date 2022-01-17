@@ -489,28 +489,23 @@ public class HeuristicaRPP {
                 ciclo = algoritmoHeuristicoRPP(g, R, vertexScan)
             }
             
-            // // Imprime solución en salida estándar
-            // ciclo.forEach {
-            //     val u = fInv(it.cualquieraDeLosVertices()) + 1
-            //     print("$u ")
-            // }
-            // val aFinal = ciclo.last()
-            // val u = aFinal.cualquieraDeLosVertices()
-            // val v = fInv(aFinal.elOtroVertice(u)) + 1
-            // println("$v")
+            // Imprime solución en salida estándar
+            ciclo.forEach {
+                val u = fInv(it.cualquieraDeLosVertices()) + 1
+                print("$u ")
+            }
+            val aFinal = ciclo.last()
+            val u = aFinal.cualquieraDeLosVertices()
+            val v = fInv(aFinal.elOtroVertice(u)) + 1
+            println("$v")
             
-            // val costoTotal = ciclo.sumOf { it.peso() }.toInt()
-            // println(costoTotal)
-            // println("%.3f segs.".format(ms / 1000.0))
+            val costoTotal = ciclo.sumOf { it.peso() }.toInt()
+            println(costoTotal)
+            println("%.3f segs.".format(ms / 1000.0))
 
             if (!verificarSolucionRPP(ciclo, R)) {
                 println("Error: La solución no es válida.")
             }
-
-            val nombre = args[1].split("/").last()
-            val costo = ciclo.sumOf { it.peso() }.toInt()
-            val tiempo = ms / 1000.0
-            println("$nombre,$costo,$tiempo")
         }
 
         // ---------------- VERIFICADOR DEL ALGORITMO ----------------

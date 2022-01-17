@@ -1,8 +1,8 @@
 # Fdb version 3
-["pdflatex"] 1642395133 "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/Informe.tex" "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.pdf" "Informe" 1642395135
+["pdflatex"] 1642403587 "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/Informe.tex" "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.pdf" "Informe" 1642403588
   "/etc/texmf/web2c/texmf.cnf" 1635882528 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/Informe.tex" 1642395131 12629 6545513ea135e2a4490a7fd496c6f04b ""
-  "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.aux" 1642395135 1549 6ed2a3046da71c9b6faab682ee798c3c ""
+  "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/Informe.tex" 1642403581 17134 66d0bf0c46ace685bdf94a007456fe98 ""
+  "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.aux" 1642403588 1549 57e1af421d74fbb44990c9f32d37758f ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -36,6 +36,7 @@
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb" 1248133631 35469 70d41d2b9ea31d5d813066df7c99281c ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1248133631 35752 024fb6c41858982481f6968b5fc26508 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1248133631 32722 d7379af29a190c3f453aba36302ff5a9 ""
+  "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb" 1248133631 32726 0a1aea6fcd6468ee2cf64d891f5c43c8 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb" 1248133631 33993 9b89b85fd2d9df0482bd47194d1d3bf3 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb" 1248133631 32569 5e5ddc8df908dea60932f3c484a54c0d ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb" 1248133631 32626 4f5c1b83753b1dd3a97d1b399a005b4b ""
@@ -91,13 +92,13 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1613593815 38841 799d1dd9682a55ce442e10c99777ecc1 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1636711759 5160710 ecf427ae8fa19139d8691f526e47bb9b ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1636711802 2570547 3baa0538d47da08acabd0d6ad8bd7087 ""
-  "Informe.tex" 1642395131 12629 6545513ea135e2a4490a7fd496c6f04b ""
-  "aux/Informe.aux" 1642395135 1549 6ed2a3046da71c9b6faab682ee798c3c "pdflatex"
+  "Informe.tex" 1642403581 17134 66d0bf0c46ace685bdf94a007456fe98 ""
+  "aux/Informe.aux" 1642403588 1549 57e1af421d74fbb44990c9f32d37758f "pdflatex"
   "clrscode3e.sty" 1637743846 15011 8771cee84eb571564c963f8926641deb ""
   "logotip.png" 1642292620 72314 74c8fc5bcee9aabb317892b890aadd1b ""
   (generated)
-  "aux/Informe.log"
   "aux/Informe.pdf"
-  "aux/Informe.aux"
   "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.log"
   "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.pdf"
+  "aux/Informe.aux"
+  "aux/Informe.log"
