@@ -102,7 +102,7 @@ mucho más eficiente y menos compleja que el algoritmo de Edmonds, el cual propo
 solución exacta al problema. \\
 
 Luego, el objetivo de este estudio consiste en comparar la eficacia y eficiencia de estos
-dos algoritmos aplicados a solucionar 36 distintas del problema RPP. \\
+dos algoritmos aplicados a solucionar 36 distintas del problema RPP.
 
 \section{Diseño de la solución}
 
@@ -243,16 +243,15 @@ representa el costo del camino de costo mínimo entre los vértices $i$ y $j$ de
 $G$; se usa el hecho de que $G$ es no dirigido para disminuir constantes ocultas
 y calcular solamente la triangular superior de $matCCM$, ya que como el camino de 
 costo mínimo de $i$ a $j$ será el mismo que el de $j$ a $i$, la matriz será simétrica.
-La complejidad temporal de construir $matCCM$ es, de igual forma, $O(|V||E|log|V|)$. \\ 
+La complejidad temporal de construir $matCCM$ es, de igual forma, $O(|V||E|\log|V|)$. \\ 
 
 Consecuentemente, se usa esta matriz para obtener el costo de los lados $e_t$ que
 conformarán $G_t$, dado por la función
-
 \[
    c_{et}(e_t) = \text{mín}\{matCCM_{ij} | i \in C_i \land j \in C_j \land i \neq j \}
 \]
 
-sean $C_i$, $C_j$ componentes conexas distintas de $G$.
+sean $C_i$, $C_j$ componentes conexas distintas de $G$. \\
 
 Prosiguiendo, para el paso de obtener el $E_{MST}$ se usa sin más detalles el algoritmo
 de Prim previamente implementado en \texttt{grafoLib}, porque demostró en estudios
@@ -270,7 +269,7 @@ los lados del grafo y luego los ordena por costos en orden ascendente, para
 desencolarlos en cada iteración, y se implementa el conjunto $V'$ del
 algoritmo mediante (i) un arreglo de valores booleanos que indican si un 
 vértice está en $V'$, y una variable que mantiene la cantidad de pares de vértices
-en $V'$. La complejidad temporal de este algoritmo resulta de $O(|V|^2log|V|)$,
+en $V'$. La complejidad temporal de este algoritmo resulta de $O(|V|^2\log|V|)$,
 obteniendo este tiempo por el paso que ordena los lados en orden ascendente, y
 dado que se tiene que $|E|$ = $O(|V|^2)$ al ser el grafo de entrada completo. \\
 
@@ -281,10 +280,20 @@ y escoger el lado que tenga costo mínimo tal que el otro vértice esté en $V$;
 asemeja a escoger aleatoriamente una fila de una matriz y escanear toda la columna
 buscando el lado de costo mínimo, de donde obtiene su nombre el algoritmo, y dando 
 como resultado una implementación que ocurre en tiempo asintótico $O(|V|^2)$, como
-se señala en [1].
+se señala en [1]. \\
 
-Programa cliente para la solución del problema RPP.\\
+Finalmente, es necesario mencionar que todo el algoritmo se implementa
+en la función \texttt{algoritmoHeuristicoRPP} de la clase \texttt{HeuristicaRPP},
+en la que se implementa además un programa cliente que extrae datos de las instancias
+proporcionadas en \texttt{http://www.uv.es/corberan/instancias.htm} y construye
+el mapeo que representará la función $f$, además de imprimir por salida estándar
+en distintas líneas el ciclo solución, el costo del mismo y el tiempo de ejecución
+del algoritmo, haciéndose cargo mostrar el resultado en vértices de $G$ usando $f^{-1}$.
+No se miden entonces en los tiempos de ejecución del mapeo que da lugar a $G'$ inicial
+($G_R$), pues no se considera parte del algoritmo. \\
 
+Según se apunta en [2], el algoritmo presentado tiene un desempeño asintótico de
+$O(|V|^3)$.
 
 \section{Detalles de la plataforma}
 Los siguientes son los detalles de la máquina y el entorno donde se ejecutaron las implementaciones:
@@ -306,6 +315,22 @@ del problema de RPP, se calculó el porcentaje de desviación con la fórmula:
 \begin{equation}
     \%desv = \cfrac{\text{valor obtenido} - \text{valor óptimo}}{\text{valor óptimo}} *100
 \end{equation}
+
+Se muestra entonces en el Cuadro \ref{tablaDesv} la desviación de los valores de 
+costo mínimo obtenido para cada instancia usando el algoritmo implementado. En el 
+caso en que se usa Vertex-Scan para la obtención de los apareamientos perfectos,
+se muestra además un promedio redondeado del valor obtenido en 3 ejecuciones del
+algoritmo para cada instancia, pues al escoger un vértice de manera aleatoria de
+$V'$ en cada iteración, este algoritmo produce resultados no deterministas, casi
+siempre distintos en cada ejecución. \\
+
+En el Cuadro \ref{tablaTiempos} se muestra un promedio en
+segundos del tiempo de 3 ejecuciones del algoritmo heurístico
+cada instancia, tanto usando el algoritmo ávido como Vertex-Scan 
+en el paso en que se obtiene apareamientos perfectos. Se añade al
+final además el tiempo total de ejecución al resolver las 36 instancias
+del problema y el tiempo promedio que tardó cada ejecución del
+algoritmo.
 
 \begin{table}[htbp]
    \begin{center}
@@ -404,20 +429,124 @@ del problema de RPP, se calculó el porcentaje de desviación con la fórmula:
    \caption{Tiempo de ejecución de la implementación para cada instancia}
    \label{tablaTiempos}
 \end{table}
-   
 
 \section{Análisis de los resultados}
 
+Observando el Cuadro \ref{tablaDesv} se puede notar que para 
+casi todas las instancias se obtuvo un resultado usando
+el algoritmo ávido con entre 2 y 4\% menos desviación que
+usando Vertex-Scan, sin embargo, es notorio que en las instancias
+\texttt{UR557} y \texttt{UR567} el resultado obtenido en promedio
+es mejor usando Vertex-Scan, y muy cercano al resultado usando 
+el algoritmo ávido para instancias como \texttt{UR535},
+\texttt{UR745} y \texttt{UR767}. \\
+
+Este resultado, aunque parece insignificante, nuestra que es
+posible obtener mejores resultados usando Vertex-Scan que el 
+algoritmo ávido, lo cual es una ventaja con respecto al mismo,
+ya que el algoritmo ávido, al ser determinista, obtiene siempre
+el mismo apareamiento, mientras que el carácter aleatorio (y
+a la vez ávido) de Vertex-Scan permite explorar más el espacio
+de soluciones y obtener apareamientos de menor costo, pudiendo
+resultar beneficioso ejecutar varias veces el algoritmo en búsqueda
+de mejores soluciones en caso de ser necesario, si se dispone
+de suficiente tiempo y recursos. \\
+
+A pesar de que solo se observan 2 instancias en el Cuadro
+\ref{tablaDesv} con mejores resultados para Vertex-Scan, en
+los resultados individuales de cada una de las 3 ejecuciones
+fue más frecuente encontrar una de ellas con resultados sutilmente
+mejores que los del algoritmo ávido, sin embargo esto no se
+refleja en la desviación del promedio. \\
+
+Luego, el Cuadro \ref{tablaTiempos} permite obtener una
+mejor visión de la diferencia ya no en eficacia, sino en
+eficiencia de los algoritmos de apareamiento usados, y esta 
+vez es claro que para casi todas las instancias el algoritmo
+que usa Vertex-Scan obtiene tiempos entre 10 y 200ms mejores
+que los del algoritmo ávido, acentuándose esta diferencia en
+los grafos con más vértices como el creado para resolver La
+instancia \texttt{UR167}, cuyo grafo $G$ consta de 1000 vértices. \\
+
+La diferencia en tiempo, que en total para las 36 instancias
+suma más de 3 segundos, se ve justificada porque la implementación
+del algoritmo ávido tiene una complejidad temporal de $O(|V|^2\log|V|)$,
+mientras que la de Vertex-Scan es, en cambio de $O(|V|^2)$, siendo
+ese factor logarítmico con respecto al número de vértices el causante
+de la sutil diferencia entre los tiempos del Cuadro \ref{tablaTiempos}. \\
+
+De tal forma, dado que el Vertex-Scan es más eficiente, se puede
+decir que los resultados que obtiene son razonablemente buenos,
+pudiendo incluso mejorar en ocasiones los del algoritmo ávido,
+sin embargo, si se quiere obtener un resultado consistentemente
+bueno resulta mejor usar este último.
 
 \section{Conclusiones}
 
+El algoritmo presentado para resolver el \emph{problema del cartero rural} (RPP),
+su implementación en \texttt{grafoLib} y los resultados 
+experimentales obtenidos permiten concluir que:
+
 \begin{itemize}
-   \item 
-   \item 
+   \item Sin tomar el elevado tiempo exponencial característico de
+   los algoritmos de fuerza bruta que solucionan los problemas
+   \emph{NP-complejo}, un algoritmo heurístico puede ayudar a obtener
+   soluciones no tan alejadas de las óptimas, las cuales puede ser
+   útiles en ciertas aplicaciones, y requerir un tiempo muchísimo
+   menor.
+
+   \item Los algoritmos sobre grafos vistos en el curso sirven
+   para resolver variedades de problemas, tanto computacionales
+   como en otras áreas. En este caso, fueron de utilidad algoritmos
+   para obtener árboles mínimos cobertores, apareamientos perfectos,
+   componentes conexas y caminos de costo mínimo (juntos con sus
+   costos).
+
+   \item Aunque para resolver esta implementación se necesitó de 
+   un isomorfismo entre dos grafos con vértices representados con 
+   números naturales, se observó que los grafos isomorfos son de
+   gran utilidad para mapear grafos de cualquier tipo a grafos de
+   números naturales en un intervalo, de forma que se mantiene una
+   implementación sencilla a la vez que se pueden resolver problemas
+   que requieran grafos con vértices de otro tipo (como cadenas de
+   caracteres e incluso objetos). Además, es útil y eficiente para
+   la implementación de la función $f$ del isomorfismo el uso de arreglos
+   y diccionarios como tablas de hash, que toman tiempo lineal en su
+   creación pero luego tiempo amortizado constante en su acceso.
+
+   \item Si bien se sabe que una estrategia ávida no necesariamente
+   obtiene la mejor solución a los problemas, son en su mayoría
+   sencillas de implementar y pueden usarse para resolver partes
+   de problemas más grandes proporcionando soluciones razonablemente
+   cercanas a la óptima.
+
+   \item Las ideas y algoritmos sobre grafos dirigidos pueden, en
+   muchos casos, extenderse a grafos no dirigidos, teniendo cuenta
+   de la ``orientación'' de las aristas y considerando que siempre se 
+   tiene que los lados $(u, v)$ y $(v, u)$ son iguales.
+
+   \item Cuando se dispone de suficiente tiempo y recursos, puede
+   resultar beneficioso implementar y ejecutar varias veces un
+   algoritmo que explora el espacio de soluciones para obtener
+   soluciones mejores que la de los algoritmos deterministas, 
+   especialmente si el tiempo de ejecución del algoritmo no
+   determinista es similar o mejor que el determinista.
+
+   \item Modelar problemas con grafos proporciona en la mayoría de
+   los casos poderosas herramientas para resolver desde problemas
+   cotidianos a complejos, de forma argumentablemente más sencilla
+   a si se buscase resolver los mismos problemas con el uso de 
+   otras estructuras matemáticas o de datos.
+
 \end{itemize}
 
-\section{Referencias (en caso de tenerlas)}
+\section{Referencias}
 
-ñema. \\
+\begin{enumerate}
+   \item David Avis. A survey of heuristics for the weighted matching problem. Networks,
+   13(4):475–493, 1983. \\
+   \item Wen Lea Pearn and TC Wu. Algorithms for the rural postman problem. Computers $& $Operations Research, 22(8):819–828, 1995.
+\end{enumerate}
+
 
 \end{document}
