@@ -203,25 +203,58 @@ del problema de RPP, se calculó el porcentaje de desviación con la fórmula:
    \caption{Desviación de los resultados obtenidos para cada algoritmo}
    \label{tablaDesv}
    \end{table}
+
+\begin{table}[htbp]
+   \begin{center}
+   \begin{tabular}{|r|r|r|}
+   \hline
+   \multicolumn{1}{|c|}{Nombre de} & \multicolumn{ 2}{c|}{Promedio del tiempo (seg.)} \\ \cline{2-3}
+   \multicolumn{1}{|c|}{la instancia} & \multicolumn{1}{c|}{Alg. Ávido} & \multicolumn{1}{c|}{Vertex-Scan} \\ \hline
+   \texttt{UR132} & 0,673 & 0,637 \\
+   \texttt{UR135} & 1,096 & 0,965 \\
+   \texttt{UR137} & 1,217 & 1,05 \\
+   \texttt{UR142} & 1,025 & 0,81 \\
+   \texttt{UR145} & 1,164 & 1,058 \\
+   \texttt{UR147} & 1,373 & 1,192 \\
+   \texttt{UR152} & 1,169 & 0,929 \\
+   \texttt{UR155} & 1,312 & 1,223 \\
+   \texttt{UR157} & 1,352 & 1,169 \\
+   \texttt{UR162} & 1,224 & 1,313 \\
+   \texttt{UR165} & 1,375 & 1,215 \\
+   \texttt{UR167} & 1,416 & 1,148 \\
+   \texttt{UR532} & 0,319 & 0,296 \\
+   \texttt{UR535} & 0,45 & 0,416 \\
+   \texttt{UR537} & 0,47 & 0,467 \\
+   \texttt{UR542} & 0,334 & 0,327 \\
+   \texttt{UR545} & 0,529 & 0,457 \\
+   \texttt{UR547} & 0,449 & 0,443 \\
+   \texttt{UR552} & 0,388 & 0,391 \\
+   \texttt{UR555} & 0,505 & 0,464 \\
+   \texttt{UR557} & 0,516 & 0,445 \\
+   \texttt{UR562} & 0,487 & 0,431 \\
+   \texttt{UR565} & 0,516 & 0,501 \\
+   \texttt{UR567} & 0,693 & 0,511 \\
+   \texttt{UR732} & 0,492 & 0,479 \\
+   \texttt{UR735} & 0,737 & 0,666 \\
+   \texttt{UR737} & 0,822 & 0,746 \\
+   \texttt{UR742} & 0,596 & 0,525 \\
+   \texttt{UR745} & 0,802 & 0,688 \\
+   \texttt{UR747} & 0,807 & 0,75 \\
+   \texttt{UR752} & 0,647 & 0,693 \\
+   \texttt{UR755} & 1,047 & 0,815 \\
+   \texttt{UR757} & 0,909 & 0,866 \\
+   \texttt{UR762} & 0,873 & 0,732 \\
+   \texttt{UR765} & 1,001 & 0,968 \\
+   \texttt{UR767} & 0,907 & 0,858 \\ \hline
+   \multicolumn{1}{|c|}{\textbf{Total}} & 29,692 & 26,644 \\ \hline
+   \multicolumn{1}{|c|}{\textbf{Promedio}} & 0,825 & 0,74 \\ \hline
+   \end{tabular}
+   \end{center}
+   \caption{Tiempo de ejecución de la implementación para cada instancia}
+   \label{tablaTiempos}
+   \end{table}
    
-hola otra vez, aquí van dos tablas. \\
 
-La primera tabla debe tener los valores obtenidos en la solución de las instancias de
-RPP. En especifico la tabla debe mostrar:
-
-1. El nombre de la instancia,
-
-2. El valor óptimo de la instancia,
-
-3. El porcentaje de desviación de la solución obtenida usando la heurística ávida del
-Algoritmo 2.
-4. El porcentaje de desviación de la solución obtenida usando la heurística Vertex-Scan
-del Algoritmo 3
-
-Para el caso de la heurística Vertex-Scan, para cada instancia debe presentar el promedio
-de las soluciones de tres corridas.
-La segunda tabla debe mostrar el tiempo promedio que tomó la ejecución de todas las
-instancias, usando heurística ávida y la heurística Vertex-Scan.
 \section{Análisis de los resultados}
 
 
