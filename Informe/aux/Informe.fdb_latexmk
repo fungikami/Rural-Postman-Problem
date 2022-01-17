@@ -1,8 +1,8 @@
 # Fdb version 3
-["pdflatex"] 1642403587 "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/Informe.tex" "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.pdf" "Informe" 1642403588
+["pdflatex"] 1642403785 "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/Informe.tex" "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.pdf" "Informe" 1642403787
   "/etc/texmf/web2c/texmf.cnf" 1635882528 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/Informe.tex" 1642403581 17134 66d0bf0c46ace685bdf94a007456fe98 ""
-  "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.aux" 1642403588 1549 57e1af421d74fbb44990c9f32d37758f ""
+  "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/Informe.tex" 1642403782 17165 8fca72073c4d12876ba7c9a08e1b20d3 ""
+  "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.aux" 1642403787 1549 f9593920ecb33aed24f07a121bcff039 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1246382020 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1246382020 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
@@ -92,13 +92,13 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1613593815 38841 799d1dd9682a55ce442e10c99777ecc1 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1636711759 5160710 ecf427ae8fa19139d8691f526e47bb9b ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1636711802 2570547 3baa0538d47da08acabd0d6ad8bd7087 ""
-  "Informe.tex" 1642403581 17134 66d0bf0c46ace685bdf94a007456fe98 ""
-  "aux/Informe.aux" 1642403588 1549 57e1af421d74fbb44990c9f32d37758f "pdflatex"
+  "Informe.tex" 1642403782 17165 8fca72073c4d12876ba7c9a08e1b20d3 ""
+  "aux/Informe.aux" 1642403787 1549 f9593920ecb33aed24f07a121bcff039 "pdflatex"
   "clrscode3e.sty" 1637743846 15011 8771cee84eb571564c963f8926641deb ""
   "logotip.png" 1642292620 72314 74c8fc5bcee9aabb317892b890aadd1b ""
   (generated)
-  "aux/Informe.pdf"
-  "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.log"
-  "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.pdf"
   "aux/Informe.aux"
+  "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.log"
   "aux/Informe.log"
+  "aux/Informe.pdf"
+  "/home/chus/Documents/Algos3/Proyecto2/RPPProyecto/Informe/aux/Informe.pdf"
