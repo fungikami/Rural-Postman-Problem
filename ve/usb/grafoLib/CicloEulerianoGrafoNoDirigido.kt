@@ -42,14 +42,48 @@ public class CicloEulerianoGrafoNoDirigido(val g: GrafoNoDirigido) {
     
         // Reorienta los lados
         // Obtiene los primero dos lados para saber la "orientación" del ciclo
-        val (l1, l2) = Pair(cicloEuler[0], cicloEuler[1])
+        var (l1, l2) = Pair(cicloEuler[0], cicloEuler[1])
 
-        val u1 = l1.cualquieraDeLosVertices()
-        val v1 = l1.elOtroVertice(u1)
-        val u2 = l2.cualquieraDeLosVertices()
-        val v2 = l2.elOtroVertice(u2)
+        var u1 = l1.cualquieraDeLosVertices()
+        var v1 = l1.elOtroVertice(u1)
 
+        var u2 = l2.cualquieraDeLosVertices()
+        var v2 = l2.elOtroVertice(u2)
+        
+        if (l1 == l2) {
+            try {
+                val l3 = cicloEuler[2]
+
+                val u3 = l3.cualquieraDeLosVertices()
+                val v3 = l3.elOtroVertice(u3)
+                
+                if (v2 == u3) {
+                    // La orientación es correcta
+                } else if (u2 == u3) {
+                    cicloEuler[1] = Arista(v2, u2, l2.peso())
+                } else if (v2 == v3) {
+                    cicloEuler[2] = Arista(v3, u3, l3.peso())
+                } else {
+                    cicloEuler[1] = Arista(v2, u2, l2.peso())
+                    cicloEuler[2] = Arista(v3, u3, l3.peso())
+                }
+
+                l1 = cicloEuler[0]
+                l2 = cicloEuler[1]
+
+                u1 = l1.cualquieraDeLosVertices()
+                v1 = l1.elOtroVertice(u1)
+
+                u2 = l2.cualquieraDeLosVertices()
+                v2 = l2.elOtroVertice(u2)
+            } catch (e: IndexOutOfBoundsException) {
+                // Tiene 2 lados, la orientación es correcta
+            }
+        }
+
+    
         if (v1 == u2) {
+            // La orientación es correcta
         } else if (u1 == u2) {
             cicloEuler[0] = Arista(v1, u1, l1.peso())
         } else if (v1 == v2) {

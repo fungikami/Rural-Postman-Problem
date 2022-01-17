@@ -544,13 +544,13 @@ public class HeuristicaRPP {
 
             ciclo.forEach {
                 if (!aristaAparece.add(it)) {
-                    println("Una arista se repite en el ciclo")
+                    println("Una arista se repite en el ciclo (lado: $it)")
                     return false
                 }
 
                 val fuenteActual = it.cualquieraDeLosVertices()
                 if (sumideroAnterior != fuenteActual) {
-                    println("Dos aristas adyacentes no concuerdan")
+                    println("Dos aristas adyacentes no concuerdan (lado: $it)")
                     return false
                 }
                 sumideroAnterior = it.elOtroVertice(fuenteActual)
